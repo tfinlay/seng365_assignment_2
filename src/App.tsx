@@ -1,6 +1,11 @@
 import React, {useMemo} from 'react';
-import {Container, createTheme, CssBaseline, ThemeProvider, Typography} from "@mui/material";
+import {Container, createTheme, CssBaseline, Paper, ThemeProvider} from "@mui/material";
 import {useSystemTheme} from "./hook/useSystemTheme";
+import {NavBar} from "./component/NavBar";
+import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import {IndexPage} from "./page";
+import {NotFoundPage} from "./page/404";
+import {RegisterPage} from "./page/register/register";
 
 function App() {
   const systemTheme = useSystemTheme()
@@ -14,14 +19,23 @@ function App() {
     [systemTheme]
   )
 
+  console.log(systemTheme)
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline/>
 
-      <Container>
-        <Typography variant="h1">Welcome to SENG365!</Typography>
-        <Typography variant="body1">The theme is {theme.palette.mode}</Typography>
-      </Container>
+      <Paper sx={{minHeight: '100vh', display: 'flex', flexDirection: 'column'}}>
+        <Router>
+          <NavBar/>
+
+          <Routes>
+            <Route index element={<IndexPage/>}/>
+            <Route path="/register" element={<RegisterPage/>} />
+            <Route path="*" element={<NotFoundPage/>} />
+          </Routes>
+        </Router>
+      </Paper>
     </ThemeProvider>
   );
 }
