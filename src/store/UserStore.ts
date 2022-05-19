@@ -8,16 +8,22 @@ import {
 import {runInAction} from "mobx";
 import {makeApiPath} from "../util/network_util";
 import {ServerError} from "../util/ServerError";
+import {UserProfilePhotoStore} from "./UserProfilePhotoStore";
 
 export class UserStore {
   readonly id: number
   readonly token: string
+
+  readonly profilePhoto: UserProfilePhotoStore
 
   uploadProfileStatus: LoadStatus = new LoadStatusNotYetAttempted()
 
   constructor(id: number, token: string) {
     this.id = id
     this.token = token
+    this.profilePhoto = new UserProfilePhotoStore(this.id)
+
+    this.profilePhoto.fetchImage()
   }
 
   async uploadProfilePhoto(photo: File) {
@@ -43,6 +49,7 @@ export class UserStore {
 
       runInAction(() => {
         this.uploadProfileStatus = new LoadStatusDone()
+        this.profilePhoto.fetchImage()  // Explicitly don't await it here
       })
     }
     catch (e) {

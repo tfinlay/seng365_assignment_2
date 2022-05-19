@@ -14,7 +14,7 @@ import {
 import {Link} from "react-router-dom";
 import {observer} from "mobx-react-lite";
 import {ApplicationStore} from "../store/ApplicationStore";
-import {AccountCircle} from "@mui/icons-material";
+import {ProfilePhotoBlobView} from "./ProfilePhotoBlobView";
 
 export const NavBar: React.FC = observer(() => {
   return (
@@ -71,8 +71,9 @@ const LoggedInActions: React.FC = observer(() => {
       <IconButton
         onClick={onClick}
         color="neutral"
+        size='small'
       >
-        <AccountCircle/>
+        <ProfilePhotoBlobView image={ApplicationStore.main.user?.profilePhoto?.imageData} size={35} />
       </IconButton>
 
       <Menu

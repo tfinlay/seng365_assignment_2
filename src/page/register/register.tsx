@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {CentredForm} from "../../component/CentredForm";
 import {
   Box,
@@ -137,6 +137,7 @@ interface ProfileImageSelectorAndPreviewProps {
 }
 const ProfileImageSelectorAndPreview: React.FC<ProfileImageSelectorAndPreviewProps> = observer(({store}) => {
   const [lastUploadError, setLastUploadError] = useState<string | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
   const profilePhotoSize = 150
 
   const onFileChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -154,12 +155,16 @@ const ProfileImageSelectorAndPreview: React.FC<ProfileImageSelectorAndPreviewPro
     store.setProfilePhoto(null)
   }, [store])
 
-  const customImgSrc = useMemo(() => {
+  useEffect(() => {
     if (store.profilePhoto === null) {
-      return null
+      setImagePreview(null)
     }
     else {
-      return URL.createObjectURL(store.profilePhoto)
+      const url = URL.createObjectURL(store.profilePhoto)
+      setImagePreview(url)
+      return () => {
+        URL.revokeObjectURL(url)
+      }
     }
   }, [store.profilePhoto])
 
@@ -177,10 +182,10 @@ const ProfileImageSelectorAndPreview: React.FC<ProfileImageSelectorAndPreviewPro
 
       <Box sx={{textAlign: 'center'}}>
         <Box>
-          {(store.hasCustomProfilePhoto && customImgSrc !== null) ? (
+          {(store.hasCustomProfilePhoto && imagePreview !== null) ? (
             <Box sx={{position: 'relative', display: 'inline-block'}}>
               <img
-                src={customImgSrc}
+                src={imagePreview}
                 style={{width: profilePhotoSize, height: profilePhotoSize, borderRadius: profilePhotoSize/2}}
                 alt="Preview of custom profile"
               />
