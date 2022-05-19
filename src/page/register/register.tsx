@@ -173,6 +173,8 @@ const ProfileImageSelectorAndPreview: React.FC<ProfileImageSelectorAndPreviewPro
       <input
         hidden
 
+        disabled={store.isLoading}
+
         onChange={onFileChange}
 
         type="file"
@@ -192,6 +194,7 @@ const ProfileImageSelectorAndPreview: React.FC<ProfileImageSelectorAndPreviewPro
 
               <Tooltip title="Delete custom profile picture">
                 <IconButton
+                  disabled={store.isLoading}
                   onClick={onDeleteClick}
                   color="error"
                   sx={{
@@ -214,7 +217,7 @@ const ProfileImageSelectorAndPreview: React.FC<ProfileImageSelectorAndPreviewPro
         ) : undefined}
 
         <label htmlFor="register-upload-image">
-          <Button component='span'><Upload/> Upload Profile Photo</Button>
+          <Button component='span' disabled={store.isLoading}><Upload/> Upload Profile Photo</Button>
         </label>
       </Box>
     </>
