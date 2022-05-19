@@ -129,7 +129,7 @@ export class RegisterStore {
 
   get isLoading(): boolean {
     return this.saveStatus instanceof LoadStatusPending
-      || ApplicationStore.main.logInStatus instanceof LoadStatusPending
+      || ApplicationStore.main.logInOutStatus instanceof LoadStatusPending
       || ApplicationStore.main.user?.uploadProfileStatus instanceof LoadStatusPending
   }
 }

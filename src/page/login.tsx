@@ -46,7 +46,7 @@ const LoginPageContent: React.FC = observer(() => {
     }
   }, [navigate, email, password])
 
-  const isLoading = ApplicationStore.main.logInStatus instanceof LoadStatusPending
+  const isLoading = ApplicationStore.main.logInOutStatus instanceof LoadStatusPending
 
   return (
     <CentredForm>
@@ -76,8 +76,8 @@ const LoginPageContent: React.FC = observer(() => {
 
         <PasswordField passwordStore={password} loading={isLoading} />
 
-        {(ApplicationStore.main.logInStatus instanceof LoadStatusError) ? (
-          <Typography variant="body1" sx={{color: 'error.main'}}><ErrorPresenter error={ApplicationStore.main.logInStatus.error}/></Typography>
+        {(ApplicationStore.main.logInOutStatus instanceof LoadStatusError) ? (
+          <Typography variant="body1" sx={{color: 'error.main'}}><ErrorPresenter error={ApplicationStore.main.logInOutStatus.error}/></Typography>
         ) : undefined}
       </FormCard>
     </CentredForm>

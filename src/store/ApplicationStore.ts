@@ -14,7 +14,7 @@ export class ApplicationStore {
   static readonly main = new ApplicationStore()
 
   user: UserStore | null = null
-  logInStatus: LoadStatus = new LoadStatusNotYetAttempted()
+  logInOutStatus: LoadStatus = new LoadStatusNotYetAttempted()
 
   constructor() {
     makeAutoObservable(this)
@@ -25,14 +25,15 @@ export class ApplicationStore {
   }
 
   async logIn(email: string, password: string): Promise<void> {
-    if (this.logInStatus instanceof LoadStatusPending) {
+    if (this.logInOutStatus instanceof LoadStatusPending) {
+      console.warn("Attempting to log in while still loading login/logout request.")
       return
     }
     if (this.isLoggedIn) {
       throw new Error("Please log out before attempting to log in again.")
     }
 
-    this.logInStatus = new LoadStatusPending()
+    this.logInOutStatus = new LoadStatusPending()
 
     try {
       const res = await fetch(makeApiPath("/users/login"), {
@@ -51,12 +52,49 @@ export class ApplicationStore {
 
       runInAction(() => {
         this.user = new UserStore(userId, token)
-        this.logInStatus = new LoadStatusDone()
+        this.logInOutStatus = new LoadStatusDone()
       })
     }
     catch (e) {
       runInAction(() => {
-        this.logInStatus = new LoadStatusError(e)
+        this.logInOutStatus = new LoadStatusError(e)
+      })
+      throw e
+    }
+  }
+
+  async logOut(): Promise<void> {
+    if (this.logInOutStatus instanceof LoadStatusPending) {
+      console.warn("Attempting to log out while still loading login/logout request.")
+      return
+    }
+    if (!this.isLoggedIn) {
+      throw new Error("Please log in before attempting to log out.")
+    }
+
+    this.logInOutStatus = new LoadStatusPending()
+
+    try {
+      const res = await fetch(makeApiPath("/users/logout"), {
+        method: 'POST',
+        headers: {
+          'X-Authorization': this.user!.token
+        },
+      })
+
+      if (!res.ok && res.status !== 401) {
+        // The request failed, and it isn't because our token has already expired.
+        throw new ServerError(res.statusText)
+      }
+
+      runInAction(() => {
+        this.user = null
+        this.logInOutStatus = new LoadStatusDone()
+      })
+    }
+    catch (e) {
+      runInAction(() => {
+        this.logInOutStatus = new LoadStatusError(e)
       })
       throw e
     }

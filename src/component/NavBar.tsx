@@ -54,8 +54,14 @@ const LoggedInActions: React.FC = observer(() => {
     setAnchorEl(null)
   }, [])
 
-  const onLogout = useCallback(() => {
+  const onLogout = useCallback(async () => {
     onClose()
+    try {
+      await ApplicationStore.main.logOut()
+    }
+    catch (e: any) {
+      alert(`Failed to log out due to error: ${e.message}. Please try again later.`)
+    }
   }, [onClose])
 
   return (
