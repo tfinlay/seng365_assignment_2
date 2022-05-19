@@ -66,8 +66,6 @@ const LoggedInActions: React.FC = observer(() => {
 
   return (
     <>
-      <NotLoggedInActions/> {/* TODO: Remove me! */}
-
       <IconButton
         onClick={onClick}
         color="neutral"
