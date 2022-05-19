@@ -10,11 +10,19 @@ import {
 import {makeApiPath} from "../../util/network_util";
 import {ServerError} from "../../util/ServerError";
 import {ApplicationStore} from "../../store/ApplicationStore";
+import {emailFieldValidator, notEmptyFieldValidator} from "../../util/validation";
+
+export enum RegisterStoreSaveStep {
+  REGISTER = "register",
+  LOG_IN = "log_in",
+  UPLOAD_PROFILE_PICTURE = "upload_profile_picture",
+  DONE = "done"
+}
 
 export class RegisterStore {
-  readonly firstName: ObservableFormValue = new ObservableFormValue<string>("", this.notEmptyFieldValidator.bind(this))
-  readonly lastName: ObservableFormValue = new ObservableFormValue<string>("", this.notEmptyFieldValidator.bind(this))
-  readonly email: ObservableFormValue = new ObservableFormValue<string>("", this.emailFieldValidator.bind(this))
+  readonly firstName: ObservableFormValue = new ObservableFormValue<string>("", notEmptyFieldValidator)
+  readonly lastName: ObservableFormValue = new ObservableFormValue<string>("", notEmptyFieldValidator)
+  readonly email: ObservableFormValue = new ObservableFormValue<string>("", emailFieldValidator)
   readonly password: ObservableFormValue = new ObservableFormValue<string>("", this.passwordFieldValidator.bind(this))
 
   profilePhoto: File | null = null
@@ -23,8 +31,8 @@ export class RegisterStore {
 
   constructor() {
     makeObservable(this, {
-      saveStatus: observable,
       profilePhoto: observable,
+      saveStatus: observable,
 
       setProfilePhoto: action,
       validateAndSubmit: action,
@@ -34,32 +42,14 @@ export class RegisterStore {
     })
   }
 
-  protected notEmptyFieldValidator(value: string) {
-    if (!value) {
-      return "This field is required."
-    }
-    return null
-  }
-
-  protected emailFieldValidator(value: string) {
-    const notEmptyRes = this.notEmptyFieldValidator(value)
-    if (notEmptyRes === null) {
-      if (!/^.*@.+$/.test(value) || value.length > 128) {
-        return "Invalid email."
-      }
-    }
-    return notEmptyRes
-  }
-
   protected passwordFieldValidator(value: string) {
-    const notEmptyRes = this.notEmptyFieldValidator(value)
+    const notEmptyRes = notEmptyFieldValidator(value)
     if (notEmptyRes === null) {
       if (value.length < 6) {
         return "Password must be at least 6 characters long"
       }
     }
     return notEmptyRes
-
   }
 
   setProfilePhoto(photo: File | null) {

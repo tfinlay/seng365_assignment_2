@@ -9,7 +9,9 @@ export const CentredForm: React.FC<React.PropsWithChildren<{}>> = ({ children })
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        flexGrow: 1
+        flexGrow: 1,
+        marginTop: 3,
+        marginBottom: 3
       }}
     >
       {children}

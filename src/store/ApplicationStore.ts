@@ -24,7 +24,7 @@ export class ApplicationStore {
     return this.user !== null
   }
 
-  async logIn(email: string, password: string) {
+  async logIn(email: string, password: string): Promise<void> {
     if (this.logInStatus instanceof LoadStatusPending) {
       return
     }

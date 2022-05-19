@@ -6,9 +6,11 @@ import {
   Card,
   CardActions,
   CardContent,
-  CardHeader, IconButton,
+  CardHeader,
+  IconButton, InputAdornment,
   LinearProgress,
-  TextField, Tooltip,
+  TextField,
+  Tooltip,
   Typography
 } from "@mui/material";
 import {observer, useLocalObservable} from "mobx-react-lite";
@@ -18,34 +20,27 @@ import {LoadStatusError} from "../../util/LoadStatus";
 import {ErrorPresenter} from "../../component/ErrorPresenter";
 import {AccountCircle, Cancel, Upload} from "@mui/icons-material";
 import {ApplicationStore} from "../../store/ApplicationStore";
+import {FormCard} from "../../component/FormCard";
+import {PasswordField} from "../../component/PasswordField";
 
 export const RegisterPage: React.FC = observer(() => {
-  let content = <RegisterPageContent/>
   if (ApplicationStore.main.isLoggedIn) {
-    content = <Typography variant="h6">You're already signed in!</Typography>
+    return (
+      <CentredForm>
+        <Card sx={{minWidth: 'sm', maxWidth: 450, width: '100%'}}>
+          <Typography variant="h6">You're already signed in!</Typography>
+        </Card>
+      </CentredForm>
+    )
   }
 
   return (
-    <CentredForm>
-      <Card sx={{minWidth: 'sm', maxWidth: 450, width: '100%'}}>
-        {content}
-      </Card>
-    </CentredForm>
+    <RegisterPageContent/>
   )
 })
 
-export const RegisterPageContent: React.FC = observer(() => {
+const RegisterPageContent: React.FC = observer(() => {
   const store = useLocalObservable(() => new RegisterStore())
-
-  return (
-    <RegisterPageForm store={store}/>
-  )
-})
-
-interface RegisterPageFormProps {
-  store: RegisterStore
-}
-const RegisterPageForm: React.FC<RegisterPageFormProps> = observer(({store}) => {
   const navigate = useNavigate()
 
   const onFirstNameChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,95 +55,80 @@ const RegisterPageForm: React.FC<RegisterPageFormProps> = observer(({store}) => 
     store.email.setValue(evt.target.value)
   }, [store])
 
-  const onPasswordChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
-    store.password.setValue(evt.target.value)
-  }, [store])
-
   const onSubmit = useCallback(async (evt: React.FormEvent) => {
     evt.preventDefault()
     evt.stopPropagation()
     const res = await store.validateAndSubmit()
     if (res !== null) {
-      navigate("/login")
+      navigate("/")
     }
   }, [navigate, store])
 
   return (
-    <form onSubmit={onSubmit}>
-      {(store.isLoading) ? <LinearProgress/> : null}
+    <CentredForm>
+      <FormCard
+        title='Register'
+        loading={store.isLoading}
+        onSubmit={onSubmit}
+        actions={(
+          <CardActions sx={{display: 'flex', flexDirection: 'row-reverse'}}>
+            <Button type="submit" variant="contained" disabled={store.isLoading}>Submit</Button>
+          </CardActions>
+        )}
+      >
+          <ProfileImageSelectorAndPreview store={store}/>
 
-      <CardHeader title='Register'/>
+          <Box sx={{display: 'flex', gap: 1}}>
+            <TextField
+              id="register-first-name"
+              label='First Name'
+              variant='outlined'
+              sx={{flex: 1}}
+              required
+              disabled={store.isLoading}
 
-      <CardContent sx={{display: 'flex', gap: 2, flexDirection: 'column'}}>
-        <ProfileImageSelectorAndPreview store={store}/>
+              value={store.firstName.value}
+              onChange={onFirstNameChange}
+              error={store.firstName.hasError}
+              helperText={store.firstName.error}
+            />
 
-        <Box sx={{display: 'flex', gap: 1}}>
+            <TextField
+              id="register-last-name"
+              label='Last Name'
+              variant='outlined'
+              sx={{flex: 1}}
+              required
+              disabled={store.isLoading}
+
+              value={store.lastName.value}
+              onChange={onLastNameChange}
+              error={store.lastName.hasError}
+              helperText={store.lastName.error}
+            />
+          </Box>
+
           <TextField
-            id="register-first-name"
-            label='First Name'
+            id="register-email"
+            label='Email'
             variant='outlined'
-            sx={{flex: 1}}
+            type="email"
             required
             disabled={store.isLoading}
 
-            value={store.firstName.value}
-            onChange={onFirstNameChange}
-            error={store.firstName.hasError}
-            helperText={store.firstName.error}
+            value={store.email.value}
+            onChange={onEmailChange}
+            error={store.email.hasError}
+            helperText={store.email.error}
           />
 
-          <TextField
-            id="register-last-name"
-            label='Last Name'
-            variant='outlined'
-            sx={{flex: 1}}
-            required
-            disabled={store.isLoading}
+          <PasswordField passwordStore={store.password} loading={store.isLoading}/>
 
-            value={store.lastName.value}
-            onChange={onLastNameChange}
-            error={store.lastName.hasError}
-            helperText={store.lastName.error}
-          />
-        </Box>
-
-        <TextField
-          id="register-email"
-          label='Email'
-          variant='outlined'
-          type="email"
-          required
-          disabled={store.isLoading}
-
-          value={store.email.value}
-          onChange={onEmailChange}
-          error={store.email.hasError}
-          helperText={store.email.error}
-        />
-
-        <TextField
-          id="register-password"
-          label='Password'
-          variant='outlined'
-          type="password"
-          required
-          disabled={store.isLoading}
-
-          value={store.password.value}
-          onChange={onPasswordChange}
-          error={store.password.hasError}
-          helperText={store.password.error}
-        />
-
-        {(store.saveStatus instanceof LoadStatusError) ? (
-          <Typography variant="body1" sx={{color: 'error.main'}}><ErrorPresenter error={store.saveStatus.error}/></Typography>
-        ) : undefined}
-      </CardContent>
-
-      <CardActions sx={{display: 'flex', flexDirection: 'row-reverse'}}>
-        <Button type="submit" variant="contained" disabled={store.isLoading}>Submit</Button>
-      </CardActions>
-    </form>
+          {(store.saveStatus instanceof LoadStatusError) ? (
+            <Typography variant="body1" sx={{color: 'error.main'}}><ErrorPresenter error={store.saveStatus.error}/></Typography>
+          ) : undefined}
+      </FormCard>
+    </CentredForm>
   )
 })
 
