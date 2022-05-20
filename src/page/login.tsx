@@ -2,7 +2,7 @@ import React, {useCallback} from "react";
 import {observer, useLocalObservable} from "mobx-react-lite";
 import {ObservableFormValue} from "../util/ObservableFormValue";
 import {emailFieldValidator, notEmptyFieldValidator} from "../util/validation";
-import {CentredForm} from "../component/CentredForm";
+import {Centred} from "../component/Centred";
 import {Box, Button, Card, CardActions, TextField, Typography} from "@mui/material";
 import {FormCard} from "../component/FormCard";
 import {ApplicationStore} from "../store/ApplicationStore";
@@ -14,11 +14,11 @@ import {ErrorPresenter} from "../component/ErrorPresenter";
 export const LoginPage: React.FC = observer(() => {
   if (ApplicationStore.main.isLoggedIn) {
     return (
-      <CentredForm>
+      <Centred>
         <Card sx={{minWidth: 'sm', maxWidth: 450, width: '100%'}}>
           <Typography variant="h6">You're already signed in!</Typography>
         </Card>
-      </CentredForm>
+      </Centred>
     )
   }
 
@@ -49,7 +49,7 @@ const LoginPageContent: React.FC = observer(() => {
   const isLoading = ApplicationStore.main.logInOutStatus instanceof LoadStatusPending
 
   return (
-    <CentredForm>
+    <Centred>
       <FormCard
         title='Log In'
         loading={isLoading}
@@ -80,6 +80,6 @@ const LoginPageContent: React.FC = observer(() => {
           <Typography variant="body1" sx={{color: 'error.main'}}><ErrorPresenter error={ApplicationStore.main.logInOutStatus.error}/></Typography>
         ) : undefined}
       </FormCard>
-    </CentredForm>
+    </Centred>
   )
 })

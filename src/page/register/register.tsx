@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from "react";
-import {CentredForm} from "../../component/CentredForm";
+import {Centred} from "../../component/Centred";
 import {
   Box,
   Button,
@@ -26,11 +26,11 @@ import {PasswordField} from "../../component/PasswordField";
 export const RegisterPage: React.FC = observer(() => {
   if (ApplicationStore.main.isLoggedIn) {
     return (
-      <CentredForm>
+      <Centred>
         <Card sx={{minWidth: 'sm', maxWidth: 450, width: '100%'}}>
           <Typography variant="h6">You're already signed in!</Typography>
         </Card>
-      </CentredForm>
+      </Centred>
     )
   }
 
@@ -65,7 +65,7 @@ const RegisterPageContent: React.FC = observer(() => {
   }, [navigate, store])
 
   return (
-    <CentredForm>
+    <Centred>
       <FormCard
         title='Register'
         loading={store.isLoading}
@@ -128,7 +128,7 @@ const RegisterPageContent: React.FC = observer(() => {
             <Typography variant="body1" sx={{color: 'error.main'}}><ErrorPresenter error={store.saveStatus.error}/></Typography>
           ) : undefined}
       </FormCard>
-    </CentredForm>
+    </Centred>
   )
 })
 

@@ -8,6 +8,7 @@ import {
 import {action, computed, makeObservable, observable, runInAction} from "mobx";
 import {makeApiPath} from "../util/network_util";
 import {handleServerError} from "../util/error_util";
+import {ApplicationStore} from "./ApplicationStore";
 
 export class UserProfileDetailsStore {
   readonly userId: number
@@ -50,7 +51,11 @@ export class UserProfileDetailsStore {
     this.loadStatus = new LoadStatusPending()
 
     try {
-      const res = await fetch(makeApiPath(`/users/${this.userId}`))
+      const res = await fetch(makeApiPath(`/users/${this.userId}`), (ApplicationStore.main.isLoggedIn) ? {
+        headers: {
+          'X-Authorization': ApplicationStore.main.user!.token
+        }
+      } : {})
 
       if (res.status === 404) {
         runInAction(() => {

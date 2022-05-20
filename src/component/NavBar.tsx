@@ -34,7 +34,6 @@ export const NavBar: React.FC = observer(() => {
                 <NotLoggedInActions/>
               )}
             </Box>
-
           </Toolbar>
         </Container>
       </AppBar>

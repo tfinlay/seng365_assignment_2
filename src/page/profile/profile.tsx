@@ -1,8 +1,8 @@
 import React, {useCallback, useEffect, useState} from "react";
 import {observer, useLocalObservable} from "mobx-react-lite";
 import {ApplicationStore} from "../../store/ApplicationStore";
-import {Box, Button, Card, Grid, Stack, Typography} from "@mui/material";
-import {CentredForm} from "../../component/CentredForm";
+import {Box, Button, Card, CardContent, CardHeader, Grid, LinearProgress, Stack, Typography} from "@mui/material";
+import {Centred} from "../../component/Centred";
 import {FormCard} from "../../component/FormCard";
 import {ProfileStore} from "./ProfileStore";
 import {ProfileStoreProvider, useProfileStore} from "./profile_store_context";
@@ -48,19 +48,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = observer(({user}) => {
 
 
   return (
-    <CentredForm>
+    <Centred>
       <ProfileStoreProvider store={store}>
-        <FormCard
-          title={(user.isEditable) ? <TitleWithActionButtons/> : store.pageTitle}
-          loading={false}
-          onSubmit={() => null}
-          cardStyles={{
-            maxWidth: (user.isEditable) ? "lg" : "sm"
-          }}
-          cardContentStyles={{
+        <Card sx={{minWidth: 'sm', maxWidth: (user.isEditable) ? "lg" : "sm", width: '100%'}}>
+          <CardHeader title={(user.isEditable) ? <TitleWithActionButtons/> : store.pageTitle} />
+          <CardContent sx={{
             flexDirection: "row"
-          }}
-        >
+          }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={(user.isEditable) ? 4 : 12}>
                 <ProfilePictureEditor/>
@@ -72,9 +66,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = observer(({user}) => {
                 </Grid>
               ) : undefined}
             </Grid>
-        </FormCard>
+          </CardContent>
+        </Card>
       </ProfileStoreProvider>
-    </CentredForm>
+    </Centred>
   )
 })
 

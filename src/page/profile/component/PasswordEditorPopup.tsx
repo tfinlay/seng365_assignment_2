@@ -27,6 +27,7 @@ import {useProfileStore} from "../profile_store_context";
 import {ErrorPresenter} from "../../../component/ErrorPresenter";
 import {ApplicationStore} from "../../../store/ApplicationStore";
 import {Check} from "@mui/icons-material";
+import {handleServerError} from "../../../util/error_util";
 
 class PasswordEditorPopupStore {
   readonly userId: number
@@ -78,7 +79,8 @@ class PasswordEditorPopupStore {
       })
 
       if (!res.ok) {
-        throw new ServerError(res.statusText)
+        handleServerError(res)
+        return
       }
 
       runInAction(() => {

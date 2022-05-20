@@ -34,8 +34,10 @@ export class UserStore {
     this.profilePhoto = new UserProfilePhotoStore(this.id)
     this.profileDetails = new UserProfileDetailsStore(this.id)
 
-    this.profilePhoto.fetchImage()
-    this.profileDetails.fetchDetails()
+    setTimeout(() => {
+      this.profilePhoto.fetchImage()
+      this.profileDetails.fetchDetails()
+    }, 0)
   }
 
 }
@@ -77,6 +79,7 @@ export class CurrentUserStore extends UserStore {
 
       if (!res.ok) {
         handleServerError(res)
+        return
       }
 
       runInAction(() => {
@@ -109,6 +112,7 @@ export class CurrentUserStore extends UserStore {
 
       if (!res.ok) {
         handleServerError(res)
+        return
       }
 
       runInAction(() => {

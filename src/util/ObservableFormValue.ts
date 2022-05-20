@@ -12,6 +12,7 @@ export class ObservableFormValue<T = string> {
       value: observable,
       valueEdited: observable,
 
+      resetEditedState: action,
       setValue: action,
       validate: action,
 
@@ -21,6 +22,10 @@ export class ObservableFormValue<T = string> {
 
     this.value = initialValue
     this.errorGetter = errorGetter
+  }
+
+  resetEditedState(): void {
+    this.valueEdited = false
   }
 
   setValue(value: T): void {

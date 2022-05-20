@@ -2,7 +2,7 @@ import React from "react";
 import {Box, Card} from "@mui/material";
 
 
-export const CentredForm: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
+export const Centred: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   return (
     <Box
       sx={{
