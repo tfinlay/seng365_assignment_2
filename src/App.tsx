@@ -2,14 +2,14 @@ import React, {useMemo} from 'react';
 import {Container, createTheme, CssBaseline, Paper, ThemeProvider} from "@mui/material";
 import {useSystemTheme} from "./hook/useSystemTheme";
 import {NavBar} from "./component/NavBar";
-import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import {BrowserRouter as Router, Navigate, Route, Routes} from "react-router-dom";
 import {IndexPage} from "./page";
 import {NotFoundPage} from "./page/404";
 import {RegisterPage} from "./page/register/register";
 import {LoginPage} from "./page/login";
 import {observer} from "mobx-react-lite";
 import {ApplicationStore} from "./store/ApplicationStore";
-import {ProfilePage} from "./page/profile/profile";
+import {OtherUserProfilePage, ProfilePage} from "./page/profile/profile";
 
 const App = () => {
   const systemTheme = useSystemTheme()
@@ -51,7 +51,9 @@ const AppRoutes: React.FC = observer(() => {
       <Route index element={<IndexPage/>}/>
       {!isLoggedIn && <Route path="/login" element={<LoginPage/>}/>}
       {!isLoggedIn && <Route path="/register" element={<RegisterPage/>}/>}
-      {isLoggedIn && <Route path="/profile" element={<ProfilePage/>} />}
+      {isLoggedIn && <Route path="/profile" element={<ProfilePage user={ApplicationStore.main.user!}/>} />}
+      {isLoggedIn && <Route path={`/profile/${ApplicationStore.main.user!.id}`} element={<Navigate to='/profile'/>}/>}
+      <Route path="/profile/:userId" element={<OtherUserProfilePage/>}/>
       <Route path="*" element={<NotFoundPage/>} />
     </Routes>
   )

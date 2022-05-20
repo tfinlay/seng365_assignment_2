@@ -1,4 +1,4 @@
-import {UserStore} from "./UserStore";
+import {CurrentUserStore, UserStore} from "./UserStore";
 import {makeAutoObservable, runInAction} from "mobx";
 import {
   LoadStatus,
@@ -13,7 +13,7 @@ import {ServerError} from "../util/ServerError";
 export class ApplicationStore {
   static readonly main = new ApplicationStore("application-store-main")
 
-  user: UserStore | null = null
+  user: CurrentUserStore | null = null
   logInOutStatus: LoadStatus = new LoadStatusNotYetAttempted()
 
   protected readonly localStoragePrefix: string
@@ -27,7 +27,7 @@ export class ApplicationStore {
     const storedUserInfo = this.getLocalStorageUserInfo()
     if (storedUserInfo !== null) {
       // TODO: Should we verify that the token is still valid?
-      this.user = new UserStore(storedUserInfo.userId, storedUserInfo.token)
+      this.user = new CurrentUserStore(storedUserInfo.userId, storedUserInfo.token)
     }
   }
 
@@ -91,7 +91,7 @@ export class ApplicationStore {
       const {userId, token} = await res.json()
 
       runInAction(() => {
-        this.user = new UserStore(userId, token)
+        this.user = new CurrentUserStore(userId, token)
         this.logInOutStatus = new LoadStatusDone()
         this.saveUserInfoToLocalStorage()
       })

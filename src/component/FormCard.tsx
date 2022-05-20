@@ -4,7 +4,7 @@ import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
 
 interface FormCardProps {
-  title: string
+  title: React.ReactNode
   subtitle?: string
   loading: boolean
   onSubmit: (evt: React.FormEvent) => any

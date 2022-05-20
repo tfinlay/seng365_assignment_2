@@ -10,7 +10,7 @@ import {
 import {makeApiPath} from "../../util/network_util";
 import {ServerError} from "../../util/ServerError";
 import {ApplicationStore} from "../../store/ApplicationStore";
-import {emailFieldValidator, notEmptyFieldValidator} from "../../util/validation";
+import {emailFieldValidator, notEmptyFieldValidator, passwordFieldValidator} from "../../util/validation";
 
 export enum RegisterStoreSaveStep {
   REGISTER = "register",
@@ -23,7 +23,7 @@ export class RegisterStore {
   readonly firstName: ObservableFormValue = new ObservableFormValue<string>("", notEmptyFieldValidator)
   readonly lastName: ObservableFormValue = new ObservableFormValue<string>("", notEmptyFieldValidator)
   readonly email: ObservableFormValue = new ObservableFormValue<string>("", emailFieldValidator)
-  readonly password: ObservableFormValue = new ObservableFormValue<string>("", this.passwordFieldValidator.bind(this))
+  readonly password: ObservableFormValue = new ObservableFormValue<string>("", passwordFieldValidator)
 
   profilePhoto: File | null = null
 
@@ -40,16 +40,6 @@ export class RegisterStore {
       hasCustomProfilePhoto: computed,
       isLoading: computed
     })
-  }
-
-  protected passwordFieldValidator(value: string) {
-    const notEmptyRes = notEmptyFieldValidator(value)
-    if (notEmptyRes === null) {
-      if (value.length < 6) {
-        return "Password must be at least 6 characters long"
-      }
-    }
-    return notEmptyRes
   }
 
   setProfilePhoto(photo: File | null) {

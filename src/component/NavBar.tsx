@@ -58,15 +58,17 @@ const LoggedInActions: React.FC = observer(() => {
     onClose()
     try {
       await ApplicationStore.main.logOut()
+      navigate("/")
     }
     catch (e: any) {
       alert(`Failed to log out due to error: ${e.message}. Please try again later.`)
     }
-  }, [onClose])
+  }, [navigate, onClose])
 
   const onViewProfileClick = useCallback(() => {
+    onClose()
     navigate("/profile")
-  }, [navigate])
+  }, [onClose, navigate])
 
   return (
     <>

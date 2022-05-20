@@ -1,36 +1,36 @@
-import React, {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
+import React, {useCallback, useEffect, useLayoutEffect, useRef, useState} from "react";
 import {observer} from "mobx-react-lite";
-import {ApplicationStore} from "../../../store/ApplicationStore";
-import {Box, Button, Icon, IconButton, Skeleton, Stack, Tooltip, Typography} from "@mui/material";
+import {Box, Button, IconButton, Skeleton, Tooltip, Typography} from "@mui/material";
 import {
-  AccountCircle,
-  Cancel,
-  Delete, DeleteForever,
-  DeleteForeverSharp,
-  DeleteOutlined,
-  DeleteRounded, RemoveCircle,
+  RemoveCircle,
   Upload
 } from "@mui/icons-material";
 import {ProfilePhotoBlobView} from "../../../component/ProfilePhotoBlobView";
 import {LoadStatusError, LoadStatusPending} from "../../../util/LoadStatus";
 import {ErrorPresenter} from "../../../component/ErrorPresenter";
+import {useProfileStore} from "../profile_store_context";
+import {CurrentUserStore} from "../../../store/UserStore";
 
 export const ProfilePictureEditor: React.FC = observer(() => {
-  const user = ApplicationStore.main.user!
+  const store = useProfileStore()
+  const user = store.user
 
   useEffect(() => {
+    // FIXME: Can be a bit more clever to prevent re-fetching data we already have.
     user.profilePhoto.fetchImage()
   }, [user])
 
   if (user.updateProfilePhotoStatus instanceof LoadStatusPending || user.profilePhoto.isLoading) {
     return <ProfilePictureEditorSkeleton/>
-  }
-  else {
+  } else {
     return <ProfilePictureEditorContent/>
   }
 })
 
-const ProfilePictureEditorSkeleton: React.FC = () => {
+const ProfilePictureEditorSkeleton: React.FC = observer(() => {
+  const store = useProfileStore()
+  const user = store.user
+
   return (
     <Box
       sx={{
@@ -48,23 +48,28 @@ const ProfilePictureEditorSkeleton: React.FC = () => {
           position: 'relative'
         }}
       >
-        <Skeleton variant='circular' width='100%' height='auto' sx={{aspectRatio: '1 / 1', display: 'block'}} />
+        <Skeleton variant='circular' width='100%' height='auto' sx={{aspectRatio: '1 / 1', display: 'block'}}/>
         {/*<Skeleton variant='circular' width={50} height={50} sx={{position: 'absolute', top: 5, right: -5}} />*/}
       </Box>
 
-      <Skeleton>
-        <Button component='span' disabled><Upload/> Upload Profile Photo</Button>
-      </Skeleton>
+      {user.isEditable && (
+        <Skeleton>
+          <Button component='span' disabled><Upload/> Upload Profile Photo</Button>
+        </Skeleton>
+      )}
     </Box>
   )
-}
+})
 
 const ProfilePictureEditorContent: React.FC = observer(() => {
+  const store = useProfileStore()
+  const user = store.user
+
   const [photoSize, setPhotoSize] = useState<number>(0)
   const [lastUploadError, setLastUploadError] = useState<string | null>(null)
 
-  const photo = ApplicationStore.main.user!.profilePhoto
-  const uploadStatus = ApplicationStore.main.user!.updateProfilePhotoStatus
+  const photo = user.profilePhoto
+  const uploadStatus = user.updateProfilePhotoStatus
 
   const pictureContainerRef = useRef<HTMLDivElement | null>(null)
 
@@ -93,39 +98,39 @@ const ProfilePictureEditorContent: React.FC = observer(() => {
   }, [pictureContainerRef, setPhotoSize])
 
   const onDelete = useCallback(() => {
-    ApplicationStore.main.user!.deleteProfilePhoto()
-  }, [])
+    (user as CurrentUserStore).deleteProfilePhoto()
+  }, [user])
 
   const onFileChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
-    if (evt.target.files && evt.target.files.length === 1) {
-      setLastUploadError(null)
-      ApplicationStore.main.user!.uploadProfilePhoto(evt.target.files[0])
-    }
-    else {
+    if (evt.target.files?.length === 1) {
+      setLastUploadError(null);
+      (user as CurrentUserStore).uploadProfilePhoto(evt.target.files[0])
+    } else {
       setLastUploadError("Please choose one file to upload.")
     }
-  }, [setLastUploadError])
+  }, [user])
 
 
   let currentUploadError = null
   if (lastUploadError !== null) {
     currentUploadError = lastUploadError
-  }
-  else if (uploadStatus instanceof LoadStatusError) {
+  } else if (uploadStatus instanceof LoadStatusError) {
     currentUploadError = uploadStatus.error
   }
 
   return (
     <>
-      <input
-        hidden
+      {(user.isEditable) && (
+        <input
+          hidden
 
-        onChange={onFileChange}
+          onChange={onFileChange}
 
-        type="file"
-        accept="image/jpeg,image/gif,image/png"
-        id="profile-upload-image"
-      />
+          type="file"
+          accept="image/jpeg,image/gif,image/png"
+          id="profile-upload-image"
+        />
+      )}
 
       <div
         ref={pictureContainerRef}
@@ -144,8 +149,8 @@ const ProfilePictureEditorContent: React.FC = observer(() => {
             position: 'relative'
           }}
         >
-          <ProfilePhotoBlobView image={photo.imageData} size={photoSize} color="disabled" />
-          {(photo.hasImage) ? (
+          <ProfilePhotoBlobView image={photo.imageData} size={photoSize} color="disabled"/>
+          {(photo.hasImage && user.isEditable) ? (
             <Tooltip title="Remove custom profile picture">
               <IconButton
                 onClick={onDelete}
@@ -163,12 +168,15 @@ const ProfilePictureEditorContent: React.FC = observer(() => {
         </Box>
 
         {(currentUploadError !== null) ? (
-          <Typography variant="body1" sx={{color: 'error.main'}}><ErrorPresenter error={currentUploadError}/></Typography>
+          <Typography variant="body1" sx={{color: 'error.main'}}><ErrorPresenter
+            error={currentUploadError}/></Typography>
         ) : undefined}
 
-        <label htmlFor="profile-upload-image">
-          <Button component='span'><Upload/> Upload Profile Photo</Button>
-        </label>
+        {(user.isEditable) && (
+          <label htmlFor="profile-upload-image">
+            <Button component='span'><Upload/> Upload Profile Photo</Button>
+          </label>
+        )}
       </div>
     </>
   )

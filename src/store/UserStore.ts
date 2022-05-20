@@ -9,28 +9,53 @@ import {action, makeObservable, observable, runInAction} from "mobx";
 import {makeApiPath} from "../util/network_util";
 import {UserProfilePhotoStore} from "./UserProfilePhotoStore";
 import {handleServerError} from "../util/error_util";
+import {UserProfileDetailsStore} from "./UserProfileDetailsStore";
 
 export class UserStore {
   readonly id: number
-  readonly token: string
 
   readonly profilePhoto: UserProfilePhotoStore
+  readonly profileDetails: UserProfileDetailsStore
+
+  get isEditable() {
+    return false
+  }
 
   updateProfilePhotoStatus: LoadStatus = new LoadStatusNotYetAttempted()
+  updateProfileDetailsStatus: LoadStatus = new LoadStatusNotYetAttempted()
 
-  constructor(id: number, token: string) {
-    this.id = id
-    this.token = token
-    this.profilePhoto = new UserProfilePhotoStore(this.id)
-
+  constructor(id: number) {
     makeObservable(this, {
       updateProfilePhotoStatus: observable,
+      updateProfileDetailsStatus: observable
+    })
 
+    this.id = id
+    this.profilePhoto = new UserProfilePhotoStore(this.id)
+    this.profileDetails = new UserProfileDetailsStore(this.id)
+
+    this.profilePhoto.fetchImage()
+    this.profileDetails.fetchDetails()
+  }
+
+}
+
+export class CurrentUserStore extends UserStore {
+  readonly token: string
+
+  get isEditable(): boolean {
+    return true
+  }
+
+  constructor(id: number, token: string) {
+    super(id)
+
+    makeObservable(this, {
       uploadProfilePhoto: action,
       deleteProfilePhoto: action
     })
 
-    this.profilePhoto.fetchImage()
+    this.token = token
   }
 
   async uploadProfilePhoto(photo: File) {

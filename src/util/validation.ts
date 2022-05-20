@@ -14,3 +14,13 @@ export const emailFieldValidator = (value: string) => {
   }
   return notEmptyRes
 }
+
+export const passwordFieldValidator = (value: string) => {
+  const notEmptyRes = notEmptyFieldValidator(value)
+  if (notEmptyRes === null) {
+    if (value.length < 6) {
+      return "Password must be at least 6 characters long"
+    }
+  }
+  return notEmptyRes
+}
