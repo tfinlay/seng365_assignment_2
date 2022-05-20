@@ -1,11 +1,13 @@
 import React, {useEffect, useState} from "react";
 import {AccountCircle} from "@mui/icons-material";
+import {SvgIconTypeMap} from "@mui/material/SvgIcon/SvgIcon";
 
 interface ProfilePhotoBlobViewProps {
   image: Blob | null | undefined
-  size: number
+  size: number,
+  color?: SvgIconTypeMap["props"]["color"]
 }
-export const ProfilePhotoBlobView: React.FC<ProfilePhotoBlobViewProps> = ({ image: imageBlob, size }) => {
+export const ProfilePhotoBlobView: React.FC<ProfilePhotoBlobViewProps> = ({ image: imageBlob, size, color }) => {
   const [image, setImage] = useState<string | null>(null)
 
   useEffect(() => {
@@ -22,7 +24,7 @@ export const ProfilePhotoBlobView: React.FC<ProfilePhotoBlobViewProps> = ({ imag
   }, [imageBlob])
 
   if (image === null) {
-    return <AccountCircle sx={{fontSize: size}}/>
+    return <AccountCircle sx={{fontSize: size}} color={color}/>
   }
   else {
     return (

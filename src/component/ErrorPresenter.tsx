@@ -5,7 +5,12 @@ interface ErrorPresenterProps {
   error: unknown
 }
 export const ErrorPresenter: React.FC<ErrorPresenterProps> = ({error}) => {
-  if (error instanceof ServerError) {
+  if (typeof error === 'string') {
+    return (
+      <>{error}</>
+    )
+  }
+  else if (error instanceof ServerError) {
     return (
       <>{error.message}</>
     )

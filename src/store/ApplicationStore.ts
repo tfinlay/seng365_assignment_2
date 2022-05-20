@@ -11,13 +11,53 @@ import {makeApiPath} from "../util/network_util";
 import {ServerError} from "../util/ServerError";
 
 export class ApplicationStore {
-  static readonly main = new ApplicationStore()
+  static readonly main = new ApplicationStore("application-store-main")
 
   user: UserStore | null = null
   logInOutStatus: LoadStatus = new LoadStatusNotYetAttempted()
 
-  constructor() {
+  protected readonly localStoragePrefix: string
+
+  protected constructor(localStoragePrefix: string) {
     makeAutoObservable(this)
+
+    this.localStoragePrefix = localStoragePrefix
+
+
+    const storedUserInfo = this.getLocalStorageUserInfo()
+    if (storedUserInfo !== null) {
+      // TODO: Should we verify that the token is still valid?
+      this.user = new UserStore(storedUserInfo.userId, storedUserInfo.token)
+    }
+  }
+
+  protected getLocalStorageUserInfo(): {userId: number, token: string} | null {
+    const userIdStr = window.localStorage.getItem(`${this.localStoragePrefix}-userId`)
+    const token = window.localStorage.getItem(`${this.localStoragePrefix}-token`)
+
+    if (userIdStr === null || token === null) {
+      return null
+    }
+
+    const userId = parseInt(userIdStr, 10)
+
+    if (isNaN(userId)) {
+      return null
+    }
+
+    return {userId, token}
+  }
+
+  protected saveUserInfoToLocalStorage(): void {
+    if (this.user === null) {
+      window.localStorage.removeItem(`${this.localStoragePrefix}-userId`)
+      window.localStorage.removeItem(`${this.localStoragePrefix}-token`)
+    }
+    else {
+      window.localStorage.setItem(`${this.localStoragePrefix}-userId`, this.user.id.toString(10))
+      window.localStorage.setItem(`${this.localStoragePrefix}-token`, this.user.token)
+    }
+
   }
 
   get isLoggedIn(): boolean {
@@ -53,6 +93,7 @@ export class ApplicationStore {
       runInAction(() => {
         this.user = new UserStore(userId, token)
         this.logInOutStatus = new LoadStatusDone()
+        this.saveUserInfoToLocalStorage()
       })
     }
     catch (e) {
@@ -90,6 +131,7 @@ export class ApplicationStore {
       runInAction(() => {
         this.user = null
         this.logInOutStatus = new LoadStatusDone()
+        this.saveUserInfoToLocalStorage()
       })
     }
     catch (e) {

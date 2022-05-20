@@ -8,6 +8,7 @@ import {
 import {action, computed, makeObservable, observable, runInAction} from "mobx";
 import {makeApiPath} from "../util/network_util";
 import {ServerError} from "../util/ServerError";
+import {handleServerError} from "../util/error_util";
 
 export class UserProfilePhotoStore {
   readonly userId: number
@@ -61,7 +62,7 @@ export class UserProfilePhotoStore {
         })
       }
       else {
-        throw new ServerError(res.statusText)
+        handleServerError(res)
       }
     }
     catch (e) {

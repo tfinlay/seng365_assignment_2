@@ -5,10 +5,10 @@ import {
   LoadStatusNotYetAttempted,
   LoadStatusPending
 } from "../util/LoadStatus";
-import {runInAction} from "mobx";
+import {action, makeObservable, observable, runInAction} from "mobx";
 import {makeApiPath} from "../util/network_util";
-import {ServerError} from "../util/ServerError";
 import {UserProfilePhotoStore} from "./UserProfilePhotoStore";
+import {handleServerError} from "../util/error_util";
 
 export class UserStore {
   readonly id: number
@@ -16,22 +16,29 @@ export class UserStore {
 
   readonly profilePhoto: UserProfilePhotoStore
 
-  uploadProfileStatus: LoadStatus = new LoadStatusNotYetAttempted()
+  updateProfilePhotoStatus: LoadStatus = new LoadStatusNotYetAttempted()
 
   constructor(id: number, token: string) {
     this.id = id
     this.token = token
     this.profilePhoto = new UserProfilePhotoStore(this.id)
 
+    makeObservable(this, {
+      updateProfilePhotoStatus: observable,
+
+      uploadProfilePhoto: action,
+      deleteProfilePhoto: action
+    })
+
     this.profilePhoto.fetchImage()
   }
 
   async uploadProfilePhoto(photo: File) {
-    if (this.uploadProfileStatus instanceof LoadStatusPending) {
+    if (this.updateProfilePhotoStatus instanceof LoadStatusPending) {
       return
     }
 
-    this.uploadProfileStatus = new LoadStatusPending()
+    this.updateProfilePhotoStatus = new LoadStatusPending()
 
     try {
       const res = await fetch(makeApiPath(`/users/${this.id}/image`), {
@@ -44,17 +51,49 @@ export class UserStore {
       })
 
       if (!res.ok) {
-        throw new ServerError(res.statusText)
+        handleServerError(res)
       }
 
       runInAction(() => {
-        this.uploadProfileStatus = new LoadStatusDone()
+        this.updateProfilePhotoStatus = new LoadStatusDone()
         this.profilePhoto.fetchImage()  // Explicitly don't await it here
       })
     }
     catch (e) {
       runInAction(() => {
-        this.uploadProfileStatus = new LoadStatusError(e)
+        this.updateProfilePhotoStatus = new LoadStatusError(e)
+      })
+      throw e
+    }
+  }
+
+  async deleteProfilePhoto() {
+    if (this.updateProfilePhotoStatus instanceof LoadStatusPending) {
+      return
+    }
+
+    this.updateProfilePhotoStatus = new LoadStatusPending()
+
+    try {
+      const res = await fetch(makeApiPath(`/users/${this.id}/image`), {
+        method: 'DELETE',
+        headers: {
+          'X-Authorization': this.token,
+        }
+      })
+
+      if (!res.ok) {
+        handleServerError(res)
+      }
+
+      runInAction(() => {
+        this.updateProfilePhotoStatus = new LoadStatusDone()
+        this.profilePhoto.fetchImage()  // Explicitly don't await it here
+      })
+    }
+    catch (e) {
+      runInAction(() => {
+        this.updateProfilePhotoStatus = new LoadStatusError(e)
       })
       throw e
     }

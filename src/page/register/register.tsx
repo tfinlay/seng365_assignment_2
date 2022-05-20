@@ -141,8 +141,6 @@ const ProfileImageSelectorAndPreview: React.FC<ProfileImageSelectorAndPreviewPro
   const profilePhotoSize = 150
 
   const onFileChange = useCallback((evt: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(evt.target.files)
-
     if (evt.target.files && evt.target.files.length === 1) {
       store.setProfilePhoto(evt.target.files[0])
     }

@@ -1,17 +1,16 @@
-import React, {useCallback, useRef, useState} from "react";
+import React, {useCallback, useState} from "react";
 import {
   AppBar,
   Box,
   Button,
   Container,
   IconButton,
-  makeStyles,
   Menu,
   MenuItem,
   Toolbar,
   Typography
 } from "@mui/material";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {observer} from "mobx-react-lite";
 import {ApplicationStore} from "../store/ApplicationStore";
 import {ProfilePhotoBlobView} from "./ProfilePhotoBlobView";
@@ -44,6 +43,7 @@ export const NavBar: React.FC = observer(() => {
 })
 
 const LoggedInActions: React.FC = observer(() => {
+  const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
   const onClick = useCallback((evt: React.MouseEvent<HTMLElement>) => {
@@ -64,6 +64,10 @@ const LoggedInActions: React.FC = observer(() => {
     }
   }, [onClose])
 
+  const onViewProfileClick = useCallback(() => {
+    navigate("/profile")
+  }, [navigate])
+
   return (
     <>
       <IconButton
@@ -79,6 +83,7 @@ const LoggedInActions: React.FC = observer(() => {
         anchorEl={anchorEl}
         onClose={onClose}
       >
+        <MenuItem divider onClick={onViewProfileClick}>My Profile</MenuItem>
         <MenuItem onClick={onLogout}>Log Out</MenuItem>
       </Menu>
     </>
