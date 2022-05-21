@@ -128,12 +128,27 @@ class ProfileDetailsEditorStore {
 
 export const ProfileDetailsEditor: React.FC = observer(() => {
   const pageStore = useProfileStore()
+  const user = pageStore.user
 
-  if (pageStore.user.profileDetails.hasDetails) {
+  useEffect(() => {
+    // FIXME: Can be a bit more clever to prevent re-fetching data we already have.
+    user.profileDetails.fetchDetails()
+  }, [user])
+
+  if (user.profileDetails.hasDetails) {
     return <ProfileDetailsEditorContent/>
   }
-  else {
+  else if (user.profileDetails.isLoading) {
     return <ProfileDetailsEditorSkeleton/>
+  }
+  else if (user.profileDetails.loadStatus instanceof LoadStatusError) {
+    return <ErrorPresenter error={user.profileDetails.loadStatus.error}/>
+  }
+  else {
+    // No details and not loading... This user may not exist (or loading hasn't started yet)
+    return (
+      <Typography variant='subtitle1'>Failed to load user details. Please try again later.</Typography>
+    )
   }
 })
 

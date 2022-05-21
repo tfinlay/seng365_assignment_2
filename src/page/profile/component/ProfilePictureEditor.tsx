@@ -6,7 +6,7 @@ import {
   Upload
 } from "@mui/icons-material";
 import {ProfilePhotoBlobView} from "../../../component/ProfilePhotoBlobView";
-import {LoadStatusError, LoadStatusPending} from "../../../util/LoadStatus";
+import {LoadStatusDone, LoadStatusError, LoadStatusPending} from "../../../util/LoadStatus";
 import {ErrorPresenter} from "../../../component/ErrorPresenter";
 import {useProfileStore} from "../profile_store_context";
 import {CurrentUserStore} from "../../../store/UserStore";
@@ -22,8 +22,18 @@ export const ProfilePictureEditor: React.FC = observer(() => {
 
   if (user.updateProfilePhotoStatus instanceof LoadStatusPending || user.profilePhoto.isLoading) {
     return <ProfilePictureEditorSkeleton/>
-  } else {
+  }
+  else if (user.profilePhoto.loadStatus instanceof LoadStatusDone) {
     return <ProfilePictureEditorContent/>
+  }
+  else if (user.profilePhoto.loadStatus instanceof LoadStatusError) {
+    return <ErrorPresenter error={user.profilePhoto.loadStatus.error}/>
+  }
+  else {
+    // No data and not loading... This user may not exist (or loading hasn't started yet)
+    return (
+      <Typography variant='subtitle1'>Failed to load profile picture. Please try again later.</Typography>
+    )
   }
 })
 
