@@ -7,16 +7,15 @@ import {
 } from "../util/LoadStatus";
 import {action, computed, makeObservable, observable, runInAction} from "mobx";
 import {makeApiPath} from "../util/network_util";
-import {ServerError} from "../util/ServerError";
 import {handleServerError} from "../util/error_util";
 
-export class UserProfilePhotoStore {
-  readonly userId: number
+export class PhotoStore {
+  readonly apiPath: string
 
   loadStatus: LoadStatus = new LoadStatusNotYetAttempted()
   imageData: Blob | null = null
 
-  constructor(userId: number) {
+  constructor(apiPath: string) {
     makeObservable(this, {
       loadStatus: observable,
       imageData: observable,
@@ -27,7 +26,7 @@ export class UserProfilePhotoStore {
       fetchImage: action
     })
 
-    this.userId = userId
+    this.apiPath = apiPath
   }
 
   get isLoading(): boolean {
@@ -46,7 +45,7 @@ export class UserProfilePhotoStore {
     this.loadStatus = new LoadStatusPending()
 
     try {
-      const res = await fetch(makeApiPath(`/users/${this.userId}/image`))
+      const res = await fetch(makeApiPath(this.apiPath))
 
       if (res.status === 404) {
         runInAction(() => {

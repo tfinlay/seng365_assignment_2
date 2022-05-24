@@ -1,9 +1,9 @@
 import React, {useMemo} from 'react';
-import {Container, createTheme, CssBaseline, Paper, ThemeProvider} from "@mui/material";
+import {createTheme, CssBaseline, Paper, ThemeProvider} from "@mui/material";
 import {useSystemTheme} from "./hook/useSystemTheme";
 import {NavBar} from "./component/NavBar";
 import {BrowserRouter as Router, Navigate, Route, Routes} from "react-router-dom";
-import {IndexPage} from "./page";
+import {AuctionListPageRoot} from "./page/auction_list/auction_list";
 import {NotFoundPage} from "./page/404";
 import {RegisterPage} from "./page/register/register";
 import {LoginPage} from "./page/login";
@@ -48,7 +48,7 @@ const AppRoutes: React.FC = observer(() => {
 
   return (
     <Routes>
-      <Route index element={<IndexPage/>}/>
+      <Route index element={<AuctionListPageRoot/>}/>
       {!isLoggedIn && <Route path="/login" element={<LoginPage/>}/>}
       {!isLoggedIn && <Route path="/register" element={<RegisterPage/>}/>}
       {isLoggedIn && <Route path="/profile" element={<ProfilePage user={ApplicationStore.main.user!}/>} />}

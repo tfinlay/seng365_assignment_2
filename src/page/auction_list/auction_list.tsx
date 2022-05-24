@@ -1,8 +1,24 @@
 import React from "react";
 import {Box, Card, CardHeader, Grid, LinearProgress, Typography} from "@mui/material";
-import {observer} from "mobx-react-lite";
+import {observer, useLocalObservable} from "mobx-react-lite";
+import {AuctionListStore} from "./AuctionListStore";
+import {AuctionListStoreProvider, useAuctionListStore} from "./auction_list_store_context";
+import {AuctionListPage} from "./component/AuctionListPage";
 
-export const IndexPage: React.FC = observer(() => {
+
+export const AuctionListPageRoot: React.FC = observer(() => {
+  const store = useLocalObservable(() => new AuctionListStore())
+
+  return (
+    <AuctionListStoreProvider store={store}>
+      <AuctionListContent/>
+    </AuctionListStoreProvider>
+  )
+})
+
+const AuctionListContent = observer(() => {
+  const store = useAuctionListStore()
+
   return (
     <Box
       sx={{
@@ -11,7 +27,7 @@ export const IndexPage: React.FC = observer(() => {
         flexDirection: 'column'
       }}
     >
-      {/*<LinearProgress sx={{width: '100%'}} color='secondary' variant='query'/>*/}
+      {store.isLoading && <LinearProgress sx={{width: '100%'}} color='secondary'/>}
 
       <Box  sx={{width: '100%', maxWidth: 'xl', marginTop: 3, marginBottom: 3}}>
         <Typography variant='h3' sx={{marginBottom: 1}}>Browse Auctions</Typography>
@@ -27,10 +43,7 @@ export const IndexPage: React.FC = observer(() => {
           </Grid>
 
           <Grid item xs={12} lg={9}>
-            <Card sx={{width: '100%'}}>
-              {/*<LinearProgress/>*/}
-              <Typography variant='body1'>Hello, I'm an auction</Typography>
-            </Card>
+            <AuctionListPage/>
           </Grid>
         </Grid>
       </Box>

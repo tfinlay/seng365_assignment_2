@@ -7,14 +7,14 @@ import {
 } from "../util/LoadStatus";
 import {action, makeObservable, observable, runInAction} from "mobx";
 import {makeApiPath} from "../util/network_util";
-import {UserProfilePhotoStore} from "./UserProfilePhotoStore";
+import {PhotoStore} from "./PhotoStore";
 import {handleServerError} from "../util/error_util";
 import {UserProfileDetailsStore} from "./UserProfileDetailsStore";
 
 export class UserStore {
   readonly id: number
 
-  readonly profilePhoto: UserProfilePhotoStore
+  readonly profilePhoto: PhotoStore
   readonly profileDetails: UserProfileDetailsStore
 
   get isEditable() {
@@ -31,7 +31,7 @@ export class UserStore {
     })
 
     this.id = id
-    this.profilePhoto = new UserProfilePhotoStore(this.id)
+    this.profilePhoto = new PhotoStore(`/users/${this.id}/image`)
     this.profileDetails = new UserProfileDetailsStore(this.id)
 
     setTimeout(() => {
