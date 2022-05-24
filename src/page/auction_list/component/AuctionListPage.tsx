@@ -1,14 +1,23 @@
 import React from "react";
 import {observer} from "mobx-react-lite";
 import {useAuctionListStore} from "../auction_list_store_context";
-import {Box, Button, Card, CardContent, ImageList, ImageListItem, Skeleton, Typography} from "@mui/material";
+import {Box, Button, Card, Skeleton, Typography} from "@mui/material";
 import {LoadStatusDone, LoadStatusError} from "../../../util/LoadStatus";
 import {ErrorPresenter} from "../../../component/ErrorPresenter";
 import {AuctionListPageContent} from "./AuctionListPageContent";
 
 export const AuctionListPage: React.FC = observer(() => {
+  const store = useAuctionListStore()
+
   return (
     <Card sx={{width: '100%', boxSizing: 'border-box', padding: 2}}>
+      {(store.categories.loadStatus instanceof LoadStatusError) ? (
+        <Box sx={{padding: 1}}>
+          <Typography variant="subtitle1" color="error">Failed to load category information:</Typography>
+          <Typography variant="body1" color="error"><ErrorPresenter error={store.categories.loadStatus.error}/></Typography>
+          <Button onClick={() => store.categories.fetchCategories()}>Try again</Button>
+        </Box>
+      ) : undefined}
       <AuctionListPageRoot/>
     </Card>
   )
@@ -17,7 +26,7 @@ export const AuctionListPage: React.FC = observer(() => {
 const AuctionListPageRoot: React.FC = observer(() => {
   const store = useAuctionListStore()
 
-  if (store.isLoading) {
+  if (store.page.isLoading) {
     return <AuctionListPageSkeleton/>
   }
   else if (store.page.loadStatus instanceof LoadStatusDone) {
@@ -27,7 +36,7 @@ const AuctionListPageRoot: React.FC = observer(() => {
     return <ErrorPresenter error={store.page.loadStatus.error}/>
   }
   else {
-    return <Typography variant='body1'>We've found ourselves in an unexpected state... Would you like to: <Button onClick={() => store.reload()}>Reload</Button>?</Typography>
+    return <Typography variant='body1'>We've found ourselves in an unexpected state... Would you like to: <Button onClick={() => store.reloadPage()}>Reload</Button>?</Typography>
   }
 })
 

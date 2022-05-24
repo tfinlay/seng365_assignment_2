@@ -10,7 +10,7 @@ export interface IAuctionListPageAuction {
   auctionId: number,
   sellerFirstName: string,
   sellerLastName: string,
-  highestBid: number,
+  highestBid: number | null,
   numBids: number
 }
 

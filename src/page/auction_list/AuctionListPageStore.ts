@@ -99,7 +99,7 @@ export class AuctionListPageStore {
     // Filters
     url.searchParams.set("q", filters.query)
     for (const categoryId of filters.categoryIds) {
-      url.searchParams.append("catgeoryIds", categoryId.toString(10))
+      url.searchParams.append("categoryIds", categoryId.toString(10))
     }
     if (filters.sellerId !== null) {
       url.searchParams.set("sellerId", filters.sellerId.toString(10))

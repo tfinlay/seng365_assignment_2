@@ -18,6 +18,7 @@ import {Link} from "react-router-dom";
 import {AuctionListPageAuction} from "../AuctionListPageAuction";
 import intervalToDuration from "date-fns/intervalToDuration";
 import {LocalOffer, Tag} from "@mui/icons-material";
+import {UserInfoRow} from "../../../component/UserInfoRow";
 
 interface AuctionListItemProps {
   index: number
@@ -27,8 +28,8 @@ export const AuctionListItem: React.FC<AuctionListItemProps> = observer(({index}
   const auction = store.page.auctions![index]
 
   return (
-    <Card sx={{height: 300, minWidth: 250, flex: 1}}>
-      <CardActionArea component={Link} to={`/auction/${auction.auction.auctionId}`}>
+    <Card sx={{minWidth: 250, flex: 1, display: 'flex'}}>
+      <CardActionArea component={Link} to={`/auction/${auction.auction.auctionId}`} sx={{flex: 1}}>
         <Box sx={{position: 'relative'}}>
           <PhotoBlobView
             image={auction.photo.imageData}
@@ -47,24 +48,74 @@ export const AuctionListItem: React.FC<AuctionListItemProps> = observer(({index}
             )}
           />
 
-          <AuctionListItemClosingChip endDate={auction.endDate}/>
+          <AuctionListItemClosingChip auction={auction}/>
         </Box>
 
         <CardContent>
           <Typography variant='h6' component='div'>{auction.auction.title}</Typography>
-          <Typography variant='body1'><LocalOffer fontSize='inherit' sx={{verticalAlign: 'middle'}}/> {auction.auction.categoryId}</Typography> {/* TODO: Load category names! */}
+          <AuctionListItemCategory auction={auction}/>
+          <Box sx={{paddingTop: 1}}>
+            <UserInfoRow userId={auction.auction.sellerId}/>
+          </Box>
+
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'end'
+          }}>
+            <Box sx={{flex: 1}}>
+              <Typography variant='overline' component='div'>{(auction.auction.highestBid !== null && auction.auction.highestBid >= auction.auction.reserve) ? 'Reserve Met' : 'Reserve'}</Typography>
+              <Typography variant='button' component='div'>${auction.auction.reserve}.00</Typography>
+            </Box>
+            {(auction.auction.highestBid !== null) && (
+              <Box sx={{flex: 1, textAlign: 'right'}}>
+                <Typography variant='overline' component='div'>Highest Bid</Typography>
+                <Typography variant='button' component='div'>${auction.auction.highestBid}.00</Typography>
+              </Box>
+            )}
+          </Box>
         </CardContent>
       </CardActionArea>
     </Card>
   )
 })
 
-interface AuctionListItemClosingChipProps {
-  endDate: Date
+interface AuctionListItemSubComponentProps {
+  auction: AuctionListPageAuction
 }
-const AuctionListItemClosingChip: React.FC<AuctionListItemClosingChipProps> = observer(({endDate}) => {
-  const theme = useTheme()
 
+const AuctionListItemCategory: React.FC<AuctionListItemSubComponentProps> = observer(({auction}) => {
+  const store = useAuctionListStore()
+
+  if (store.categories.isLoading) {
+    return (
+      <Tooltip title='Loading Category'>
+        <Typography variant='body1'><Skeleton/></Typography>
+      </Tooltip>
+    )
+  }
+  else {
+    const categoryName = store.categories.categoriesById?.get(auction.auction.categoryId)
+
+    if (categoryName !== undefined) {
+      return (
+        <Typography variant='body1'><LocalOffer fontSize='inherit' sx={{verticalAlign: 'middle'}}/> {categoryName}</Typography>
+      )
+    }
+    else {
+      return (
+        <Tooltip title={`Category ID is: ${auction.auction.categoryId}`}>
+          <Typography variant='body1' color='red' sx={{fontStyle: 'italic'}}>
+            Failed to find category.
+          </Typography>
+        </Tooltip>
+      )
+    }
+  }
+})
+
+const AuctionListItemClosingChip: React.FC<AuctionListItemSubComponentProps> = observer(({auction}) => {
+  const endDate = auction.endDate
   const isClosed = new Date() > endDate
 
   let message
@@ -107,7 +158,6 @@ const AuctionListItemClosingChip: React.FC<AuctionListItemClosingChipProps> = ob
           position: 'absolute',
           top: 2,
           right: 2,
-          backgroundColor: alpha(theme.palette.primary[theme.palette.mode], 0.8),
           cursor: 'pointer'
         }}
         size='small'

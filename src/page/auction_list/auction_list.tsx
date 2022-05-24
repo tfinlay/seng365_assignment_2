@@ -4,6 +4,7 @@ import {observer, useLocalObservable} from "mobx-react-lite";
 import {AuctionListStore} from "./AuctionListStore";
 import {AuctionListStoreProvider, useAuctionListStore} from "./auction_list_store_context";
 import {AuctionListPage} from "./component/AuctionListPage";
+import {AuctionFilters} from "./component/AuctionFilters";
 
 
 export const AuctionListPageRoot: React.FC = observer(() => {
@@ -37,9 +38,7 @@ const AuctionListContent = observer(() => {
           spacing={1}
         >
           <Grid item xs={12} lg={3}>
-            <Card sx={{width: '100%'}}>
-              <CardHeader title="Filters" />
-            </Card>
+            <AuctionFilters/>
           </Grid>
 
           <Grid item xs={12} lg={9}>

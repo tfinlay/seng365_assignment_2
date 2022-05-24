@@ -21,15 +21,7 @@ export class UserStore {
     return false
   }
 
-  updateProfilePhotoStatus: LoadStatus = new LoadStatusNotYetAttempted()
-  updateProfileDetailsStatus: LoadStatus = new LoadStatusNotYetAttempted()
-
   constructor(id: number) {
-    makeObservable(this, {
-      updateProfilePhotoStatus: observable,
-      updateProfileDetailsStatus: observable
-    })
-
     this.id = id
     this.profilePhoto = new PhotoStore(`/users/${this.id}/image`)
     this.profileDetails = new UserProfileDetailsStore(this.id)
@@ -45,6 +37,9 @@ export class UserStore {
 export class CurrentUserStore extends UserStore {
   readonly token: string
 
+  updateProfilePhotoStatus: LoadStatus = new LoadStatusNotYetAttempted()
+  updateProfileDetailsStatus: LoadStatus = new LoadStatusNotYetAttempted()
+
   get isEditable(): boolean {
     return true
   }
@@ -53,6 +48,9 @@ export class CurrentUserStore extends UserStore {
     super(id)
 
     makeObservable(this, {
+      updateProfilePhotoStatus: observable,
+      updateProfileDetailsStatus: observable,
+
       uploadProfilePhoto: action,
       deleteProfilePhoto: action
     })

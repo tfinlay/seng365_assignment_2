@@ -13,7 +13,7 @@ import {CurrentUserStore} from "../../../store/UserStore";
 
 export const ProfilePictureEditor: React.FC = observer(() => {
   const store = useProfileStore()
-  const user = store.user
+  const user = store.user as CurrentUserStore
 
   useEffect(() => {
     // FIXME: Can be a bit more clever to prevent re-fetching data we already have.
@@ -73,7 +73,7 @@ const ProfilePictureEditorSkeleton: React.FC = observer(() => {
 
 const ProfilePictureEditorContent: React.FC = observer(() => {
   const store = useProfileStore()
-  const user = store.user
+  const user = store.user as CurrentUserStore
 
   const [photoSize, setPhotoSize] = useState<number>(0)
   const [lastUploadError, setLastUploadError] = useState<string | null>(null)
