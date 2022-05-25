@@ -1,10 +1,17 @@
 import React, {useEffect, useState} from "react";
 import {observer} from "mobx-react-lite";
 import {AuctionStore} from "../../store/AuctionStore";
-import {PhotoBlobView} from "../../component/PhotoBlobView";
-import {CircularProgress} from "@mui/material";
 import {observable} from "mobx";
 import {AuctionViewStore} from "./AuctionViewStore";
+import {Centred} from "../../component/Centred";
+import {AuctionViewStoreProvider, useAuctionViewStore} from "./auction_view_store_context";
+import {Box, Card, CardContent, CardHeader, Chip, Grid, Skeleton, Stack, Tooltip, Typography} from "@mui/material";
+import {LoadStatusDone, LoadStatusError} from "../../util/LoadStatus";
+import {ErrorPresenter} from "../../component/ErrorPresenter";
+import {Navigate} from "react-router-dom";
+import {PhotoBlobView} from "../../component/PhotoBlobView";
+import {AuctionViewPageOverviewColumn} from "./component/AuctionViewPageOverviewColumn";
+import {AuctionViewPageBidColumn} from "./component/AuctionViewPageBidColumn";
 
 const makeStore = (auction: AuctionStore) => observable(new AuctionViewStore(auction), {}, {autoBind: true})
 
@@ -21,6 +28,61 @@ export const AuctionViewPage: React.FC<AuctionViewPageProps> = observer(({auctio
   }, [store, auction])
 
   return (
-    <PhotoBlobView image={auction.photo.imageData} imageBuilder={(src) => <img src={src}/>} defaultBuilder={() => <CircularProgress/>}/>
+    <Box sx={{display: 'flex', justifyContent: 'center', marginTop: 3}}>
+      <AuctionViewStoreProvider store={store}>
+        <Card sx={{minWidth: 'sm', maxWidth: "lg", width: '100%'}}>
+          <CardContent sx={{
+            flexDirection: "row"
+          }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={5}>
+                <PhotoBlobView
+                  image={store.auction.photo.imageData}
+                  imageBuilder={(src) => (
+                    <img
+                      src={src}
+                      style={{
+                        maxWidth: '100%',
+                        maxHeight: 400
+                      }}
+                      alt='Auction item'
+                    />
+                  )}
+                  defaultBuilder={() => (
+                    <Skeleton variant='rectangular' height={400}/>
+                  )}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={3}>
+                <AuctionViewPageOverviewColumn/>
+              </Grid>
+
+              <Grid item xs={12} sm={4}>
+                <AuctionViewPageBidColumn/>
+              </Grid>
+
+              <Grid item xs={12}>
+                <AuctionViewPageDescription/>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
+      </AuctionViewStoreProvider>
+    </Box>
   )
+})
+
+
+const AuctionViewPageDescription = observer(() => {
+  const store = useAuctionViewStore()
+
+  if (store.auction.details.isLoading) {
+    return (
+      <Typography variant='body1'><Skeleton/></Typography>
+    )
+  }
+  else {
+    return <Typography variant='body1' sx={{whiteSpace: 'pre-line'}}>{store.auction.details.auction?.description ?? "No description"}</Typography>
+  }
 })

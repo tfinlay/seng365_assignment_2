@@ -14,7 +14,7 @@ interface AuctionDetails {
   auctionId: number
   title: string
   categoryId: number
-  sellerId: string
+  sellerId: number
   sellerFirstName: string
   sellerLastName: string
   reserve: number
@@ -48,6 +48,10 @@ export class AuctionDetailsStore {
     return this.loadStatus instanceof LoadStatusPending
   }
 
+  get auctionDoesNotExist(): boolean {
+    return this.loadStatus instanceof LoadStatusDone && this.auction === null
+  }
+
   get endDate(): Date | null {
     if (this.auction === null) {
       return null
@@ -65,7 +69,7 @@ export class AuctionDetailsStore {
     this.loadStatus = new LoadStatusPending()
 
     try {
-      const res = await fetch(makeApiPath(`auctions/${this.auctionId}`))
+      const res = await fetch(makeApiPath(`/auctions/${this.auctionId}`))
 
       if (res.status === 404) {
         runInAction(() => {

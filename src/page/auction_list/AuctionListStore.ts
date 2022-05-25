@@ -4,12 +4,12 @@
 import {AuctionListPageStore} from "./AuctionListPageStore";
 import {AuctionListPageFiltersStore} from "./AuctionListPageFiltersStore";
 import {action, computed, makeObservable} from "mobx";
-import {AuctionListCategoriesStore} from "./AuctionListCategoriesStore";
+import {AuctionCategoriesStore} from "../../store/AuctionCategoriesStore";
 
 export class AuctionListStore {
   readonly page: AuctionListPageStore
   readonly filters: AuctionListPageFiltersStore
-  readonly categories: AuctionListCategoriesStore
+  readonly categories: AuctionCategoriesStore
 
   constructor() {
     makeObservable(this, {
@@ -24,13 +24,10 @@ export class AuctionListStore {
 
     this.page = new AuctionListPageStore(0)
     this.filters = new AuctionListPageFiltersStore()
-    this.categories = new AuctionListCategoriesStore()
+    this.categories = new AuctionCategoriesStore()
 
     this.categories.fetchCategories()
     this.page.reload(this.filters.buildFilters())
-
-    // @ts-ignore
-    window.reloadCategories = () => this.categories.fetchCategories()
   }
 
   get isLoading(): boolean {

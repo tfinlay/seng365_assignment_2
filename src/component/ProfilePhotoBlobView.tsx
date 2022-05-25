@@ -7,19 +7,20 @@ interface ProfilePhotoBlobViewProps {
   image: Blob | null | undefined
   size: number,
   color?: SvgIconTypeMap["props"]["color"]
+  style?: React.CSSProperties
 }
-export const ProfilePhotoBlobView: React.FC<ProfilePhotoBlobViewProps> = ({ image, size, color }) => {
+export const ProfilePhotoBlobView: React.FC<ProfilePhotoBlobViewProps> = ({ image, size, color, style }) => {
   return (
     <PhotoBlobView
       image={image}
       imageBuilder={(imageUrl) => (
         <img
           src={imageUrl}
-          style={{width: size, height: size, borderRadius: size/2}}
+          style={{...(style ?? {}), width: size, height: size, borderRadius: size/2}}
           alt="Profile"
         />
       )}
-      defaultBuilder={() => <AccountCircle sx={{fontSize: size}} color={color}/>}
+      defaultBuilder={() => <AccountCircle sx={{...(style ?? {}), fontSize: size}} color={color}/>}
     />
   )
 }
