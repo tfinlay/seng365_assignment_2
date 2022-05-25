@@ -1,5 +1,5 @@
 /**
- * Store for the auction list page.
+ * Store for the auction_view list page.
  */
 import {AuctionListPageStore} from "./AuctionListPageStore";
 import {AuctionListPageFiltersStore} from "./AuctionListPageFiltersStore";

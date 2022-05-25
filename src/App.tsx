@@ -10,6 +10,8 @@ import {LoginPage} from "./page/login";
 import {observer} from "mobx-react-lite";
 import {ApplicationStore} from "./store/ApplicationStore";
 import {OtherUserProfilePage, ProfilePage} from "./page/profile/profile";
+import {AuctionViewPage} from "./page/auction_view/auction_view";
+import {AuctionPageLoader} from "./component/auction/AuctionPageLoader";
 
 const App = () => {
   const systemTheme = useSystemTheme()
@@ -54,6 +56,7 @@ const AppRoutes: React.FC = observer(() => {
       {isLoggedIn && <Route path="/profile" element={<ProfilePage user={ApplicationStore.main.user!}/>} />}
       {isLoggedIn && <Route path={`/profile/${ApplicationStore.main.user!.id}`} element={<Navigate to='/profile'/>}/>}
       <Route path="/profile/:userId" element={<OtherUserProfilePage/>}/>
+      <Route path="/auction/:auctionId" element={<AuctionPageLoader pageBuilder={(auction) => <AuctionViewPage auction={auction}/>}/>}/>
       <Route path="*" element={<NotFoundPage/>} />
     </Routes>
   )

@@ -1,5 +1,5 @@
 /**
- * Store for a single sub-page in the auction list page.
+ * Store for a single sub-page in the auction_view list page.
  */
 import {action, computed, makeObservable, observable, runInAction} from "mobx";
 import {
