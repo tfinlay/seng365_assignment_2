@@ -5,13 +5,16 @@ import {Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from 
 import {AuctionListItem} from "./AuctionListItem";
 import {AuctionListFiltersSortBy} from "../AuctionListPageStore";
 import {runInAction} from "mobx";
+import {AuctionPaginationControl} from "./AuctionPaginationControl";
 
 export const AuctionListPageContent: React.FC = observer(() => {
   const store = useAuctionListStore()
 
   return (
     <>
-      <Box sx={{textAlign: 'right', paddingBottom: 2}}>
+      <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 2}}>
+        <AuctionPaginationControl/>
+
         <AuctionListPageSortSelector/>
       </Box>
 

@@ -3,7 +3,7 @@
  */
 import {AuctionListPageStore} from "./AuctionListPageStore";
 import {AuctionListPageFiltersStore} from "./AuctionListPageFiltersStore";
-import {computed, makeObservable} from "mobx";
+import {action, computed, makeObservable} from "mobx";
 import {AuctionListCategoriesStore} from "./AuctionListCategoriesStore";
 
 export class AuctionListStore {
@@ -13,7 +13,13 @@ export class AuctionListStore {
 
   constructor() {
     makeObservable(this, {
-      isLoading: computed
+      isLoading: computed,
+
+      reloadPage: action,
+      goToNextPage: action,
+      goToPrevPage: action,
+      goToFirstPage: action,
+      goToLastPage: action
     })
 
     this.page = new AuctionListPageStore(0)
@@ -33,5 +39,21 @@ export class AuctionListStore {
 
   async reloadPage() {
     await this.page.reload(this.filters.buildFilters())
+  }
+
+  async goToNextPage() {
+    await this.page.goToNextPage(this.filters.buildFilters())
+  }
+
+  async goToPrevPage() {
+    await this.page.goToPrevPage(this.filters.buildFilters())
+  }
+
+  async goToFirstPage() {
+    await this.page.goToFirstPage(this.filters.buildFilters())
+  }
+
+  async goToLastPage() {
+    await this.page.goToLastPage(this.filters.buildFilters())
   }
 }

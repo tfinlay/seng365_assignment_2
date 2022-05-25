@@ -34,7 +34,7 @@ export class AuctionListPageStore {
   static readonly PAGE_SIZE = 10
 
   pageIndex: number
-  maxPageIndex: number | null = null
+  totalResultCount: number | null = null
 
   auctions: AuctionListPageAuction[] | null = null
   loadStatus: LoadStatus = new LoadStatusNotYetAttempted()
@@ -42,25 +42,50 @@ export class AuctionListPageStore {
   constructor(pageIndex: number) {
     makeObservable(this, {
       pageIndex: observable,
-      maxPageIndex: observable,
+      totalResultCount: observable,
       loadStatus: observable,
       auctions: observable,
 
+      maxPageIndex: computed,
       isLoading: computed,
 
-      nextPage: action,
-      prevPage: action,
+      goToFirstPage: action,
+      goToLastPage: action,
+      goToNextPage: action,
+      goToPrevPage: action,
       reload: action
     })
 
     this.pageIndex = pageIndex
   }
 
+  get maxPageIndex(): number | null {
+    if (this.totalResultCount === null) {
+      return null
+    }
+    return Math.floor(this.totalResultCount / AuctionListPageStore.PAGE_SIZE)
+  }
+
   get isLoading(): boolean {
     return this.loadStatus instanceof LoadStatusPending
   }
 
-  async nextPage(filters: AuctionListFilters) {
+  async goToFirstPage(filters: AuctionListFilters) {
+    this.pageIndex = 0
+    await this.fetchCurrentPage(filters)
+  }
+
+  async goToLastPage(filters: AuctionListFilters) {
+    if (this.maxPageIndex === null) {
+      throw new Error("Last page is not known")
+    }
+    else {
+      this.pageIndex = this.maxPageIndex
+      await this.fetchCurrentPage(filters)
+    }
+  }
+
+  async goToNextPage(filters: AuctionListFilters) {
     let maxPageIndex = (this.maxPageIndex === null) ? Infinity : this.maxPageIndex
 
     if (this.pageIndex + 1 > maxPageIndex) {
@@ -72,7 +97,7 @@ export class AuctionListPageStore {
     }
   }
 
-  async prevPage(filters: AuctionListFilters) {
+  async goToPrevPage(filters: AuctionListFilters) {
     if (this.pageIndex === 0) {
       throw new Error("Already at the first page")
     }
@@ -84,7 +109,7 @@ export class AuctionListPageStore {
 
   async reload(filters: AuctionListFilters) {
     this.pageIndex = 0
-    this.maxPageIndex = null
+    this.totalResultCount = null
 
     await this.fetchCurrentPage(filters)
   }
@@ -133,7 +158,7 @@ export class AuctionListPageStore {
 
       runInAction(() => {
         this.auctions = body.auctions.map((auction) => new AuctionListPageAuction(auction))
-        this.maxPageIndex = Math.floor(body.count / AuctionListPageStore.PAGE_SIZE)
+        this.totalResultCount = body.count
         this.loadStatus = new LoadStatusDone()
       })
     }
