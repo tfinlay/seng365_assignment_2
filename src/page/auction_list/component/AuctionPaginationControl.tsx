@@ -1,8 +1,9 @@
 import React, {useCallback} from "react";
 import {observer} from "mobx-react-lite";
 import {useAuctionListStore} from "../auction_list_store_context";
-import {Box, IconButton, Stack, Tooltip, Typography} from "@mui/material";
-import {ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, FirstPage, LastPage} from "@mui/icons-material";
+import {IconButton, Stack, Tooltip, Typography} from "@mui/material";
+import {ChevronLeft, ChevronRight, FirstPage, LastPage} from "@mui/icons-material";
+import {AuctionListPageStore} from "../AuctionListPageStore";
 
 export const AuctionPaginationControl: React.FC = observer(() => {
   const store = useAuctionListStore()
@@ -41,7 +42,11 @@ export const AuctionPaginationControl: React.FC = observer(() => {
               </Tooltip>
             </>
           )}
-          <Typography variant='body1' color='text.secondary'>Page {page.pageIndex + 1} / {page.maxPageIndex! + 1}</Typography>
+
+          <Tooltip title={`Showing results ${page.pageIndex * AuctionListPageStore.PAGE_SIZE + 1} - ${page.pageIndex * AuctionListPageStore.PAGE_SIZE + (page.auctions?.length ?? 0)}`}>
+            <Typography variant='body1' color='text.secondary'>Page {page.pageIndex + 1} / {page.maxPageIndex! + 1}</Typography>
+          </Tooltip>
+
           {(page.pageIndex < page.maxPageIndex!) && (
             <>
               <Tooltip title='Go to next page'>
