@@ -1,42 +1,49 @@
 import React from "react";
 import {observer} from "mobx-react-lite";
 import {useAuctionListStore} from "../auction_list_store_context";
-import {Box, Button, Card, Skeleton, Typography} from "@mui/material";
+import {Box, Button, Card, Typography} from "@mui/material";
 import {LoadStatusDone, LoadStatusError} from "../../../util/LoadStatus";
 import {ErrorPresenter} from "../../../component/ErrorPresenter";
 import {AuctionListPageContent} from "./AuctionListPageContent";
+import {AuctionSupplierProvider, useAuctionSupplierStore} from "../auction_supplier_context";
+import {useAuctionCategoriesStore} from "../../../store/auction_categories_store_context";
+import {AuctionSkeleton} from "./AuctionSkeleton";
 
 export const AuctionListPage: React.FC = observer(() => {
+  const categories = useAuctionCategoriesStore()
   const store = useAuctionListStore()
 
   return (
     <Card sx={{width: '100%', boxSizing: 'border-box', padding: 2}}>
-      {(store.categories.loadStatus instanceof LoadStatusError) ? (
+      {(categories.loadStatus instanceof LoadStatusError) ? (
         <Box sx={{padding: 1}}>
           <Typography variant="subtitle1" color="error">Failed to load category information:</Typography>
-          <Typography variant="body1" color="error"><ErrorPresenter error={store.categories.loadStatus.error}/></Typography>
-          <Button onClick={() => store.categories.fetchCategories()}>Try again</Button>
+          <Typography variant="body1" color="error"><ErrorPresenter error={categories.loadStatus.error}/></Typography>
+          <Button onClick={() => categories.fetchCategories()}>Try again</Button>
         </Box>
       ) : undefined}
-      <AuctionListPageRoot/>
+
+      <AuctionSupplierProvider store={store.page}>
+        <AuctionListPageRoot/>
+      </AuctionSupplierProvider>
     </Card>
   )
 })
 
 const AuctionListPageRoot: React.FC = observer(() => {
-  const store = useAuctionListStore()
+  const page = useAuctionSupplierStore()
 
-  if (store.page.isLoading) {
+  if (page.isLoading) {
     return <AuctionListPageSkeleton/>
   }
-  else if (store.page.loadStatus instanceof LoadStatusDone) {
+  else if (page.loadStatus instanceof LoadStatusDone) {
     return <AuctionListPageContent/>
   }
-  else if (store.page.loadStatus instanceof LoadStatusError) {
-    return <ErrorPresenter error={store.page.loadStatus.error}/>
+  else if (page.loadStatus instanceof LoadStatusError) {
+    return <ErrorPresenter error={page.loadStatus.error}/>
   }
   else {
-    return <Typography variant='body1'>We've found ourselves in an unexpected state... Would you like to: <Button onClick={() => store.reloadPage()}>Reload</Button>?</Typography>
+    return <Typography variant='body1'>We've found ourselves in an unexpected state... Please reload the page to try again.</Typography>
   }
 })
 
@@ -50,13 +57,3 @@ const AuctionListPageSkeleton: React.FC = () => {
   )
 }
 
-interface AuctionSkeletonProps {
-  opacity?: number,
-}
-const AuctionSkeleton: React.FC<AuctionSkeletonProps> = ({opacity}) => {
-  return (
-    <Box sx={{opacity: opacity}}>
-      <Skeleton variant="rectangular" height={300} width={250} sx={{borderRadius: 2}}/>
-    </Box>
-  )
-}

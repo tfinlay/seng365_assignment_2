@@ -49,7 +49,7 @@ export const AuctionViewPageBidColumn: React.FC = observer(() => {
   }
 
   return (
-    <Box sx={{flex: 1, maxHeight: 400, display: 'flex', flexDirection: 'column'}}>
+    <Box sx={{flex: 1, maxHeight: 400, display: 'flex', flexDirection: 'column', overflow: 'auto'}}>
       <Typography variant='h6'>Bid History</Typography>
       {content}
     </Box>

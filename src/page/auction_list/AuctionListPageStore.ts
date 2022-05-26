@@ -30,7 +30,13 @@ interface AuctionListResult {
   count: number
 }
 
-export class AuctionListPageStore {
+export interface AuctionSupplier {
+  auctions: AuctionListPageAuction[] | null
+  loadStatus: LoadStatus
+  isLoading: boolean
+}
+
+export class AuctionListPageStore implements AuctionSupplier {
   static readonly PAGE_SIZE = 10
 
   pageIndex: number

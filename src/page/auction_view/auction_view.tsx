@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {observer} from "mobx-react-lite";
+import React, {useEffect, useReducer, useState} from "react";
+import {observer, useLocalObservable} from "mobx-react-lite";
 import {AuctionStore} from "../../store/AuctionStore";
 import {observable} from "mobx";
 import {AuctionViewStore} from "./AuctionViewStore";
@@ -12,6 +12,9 @@ import {Navigate} from "react-router-dom";
 import {PhotoBlobView} from "../../component/PhotoBlobView";
 import {AuctionViewPageOverviewColumn} from "./component/AuctionViewPageOverviewColumn";
 import {AuctionViewPageBidColumn} from "./component/AuctionViewPageBidColumn";
+import {AuctionViewPageSimilarAuctionsRow} from "./component/AuctionViewPageSimilarAuctionsRow";
+import {AuctionCategoriesStore} from "../../store/AuctionCategoriesStore";
+import {AuctionCategoriesStoreProvider} from "../../store/auction_categories_store_context";
 
 const makeStore = (auction: AuctionStore) => observable(new AuctionViewStore(auction), {}, {autoBind: true})
 
@@ -20,6 +23,7 @@ interface AuctionViewPageProps {
 }
 export const AuctionViewPage: React.FC<AuctionViewPageProps> = observer(({auction}) => {
   const [store, setStore] = useState(() => makeStore(auction))
+  const categories = useLocalObservable(() => new AuctionCategoriesStore())
 
   useEffect(() => {
     if (store.auction !== auction) {
@@ -29,46 +33,52 @@ export const AuctionViewPage: React.FC<AuctionViewPageProps> = observer(({auctio
 
   return (
     <Box sx={{display: 'flex', justifyContent: 'center', marginTop: 3}}>
-      <AuctionViewStoreProvider store={store}>
-        <Card sx={{minWidth: 'sm', maxWidth: "lg", width: '100%'}}>
-          <CardContent sx={{
-            flexDirection: "row"
-          }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={5}>
-                <PhotoBlobView
-                  image={store.auction.photo.imageData}
-                  imageBuilder={(src) => (
-                    <img
-                      src={src}
-                      style={{
-                        maxWidth: '100%',
-                        maxHeight: 400
-                      }}
-                      alt='Auction item'
-                    />
-                  )}
-                  defaultBuilder={() => (
-                    <Skeleton variant='rectangular' height={400}/>
-                  )}
-                />
-              </Grid>
+      <AuctionCategoriesStoreProvider store={categories}>
+        <AuctionViewStoreProvider store={store}>
+          <Card sx={{minWidth: 'sm', maxWidth: "lg", width: '100%'}}>
+            <CardContent sx={{
+              flexDirection: "row"
+            }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={5}>
+                  <PhotoBlobView
+                    image={store.auction.photo.imageData}
+                    imageBuilder={(src) => (
+                      <img
+                        src={src}
+                        style={{
+                          maxWidth: '100%',
+                          maxHeight: 400
+                        }}
+                        alt='Auction item'
+                      />
+                    )}
+                    defaultBuilder={() => (
+                      <Skeleton variant='rectangular' height={400}/>
+                    )}
+                  />
+                </Grid>
 
-              <Grid item xs={12} sm={3}>
-                <AuctionViewPageOverviewColumn/>
-              </Grid>
+                <Grid item xs={12} sm={3}>
+                  <AuctionViewPageOverviewColumn/>
+                </Grid>
 
-              <Grid item xs={12} sm={4}>
-                <AuctionViewPageBidColumn/>
-              </Grid>
+                <Grid item xs={12} sm={4}>
+                  <AuctionViewPageBidColumn/>
+                </Grid>
 
-              <Grid item xs={12}>
-                <AuctionViewPageDescription/>
+                <Grid item xs={12}>
+                  <AuctionViewPageDescription/>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <AuctionViewPageSimilarAuctionsRow/>
+                </Grid>
               </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      </AuctionViewStoreProvider>
+            </CardContent>
+          </Card>
+        </AuctionViewStoreProvider>
+      </AuctionCategoriesStoreProvider>
     </Box>
   )
 })

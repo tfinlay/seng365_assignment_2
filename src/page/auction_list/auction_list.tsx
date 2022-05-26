@@ -1,24 +1,30 @@
 import React from "react";
-import {Box, Card, CardHeader, Grid, LinearProgress, Typography} from "@mui/material";
+import {Box, Grid, LinearProgress, Typography} from "@mui/material";
 import {observer, useLocalObservable} from "mobx-react-lite";
 import {AuctionListStore} from "./AuctionListStore";
 import {AuctionListStoreProvider, useAuctionListStore} from "./auction_list_store_context";
 import {AuctionListPage} from "./component/AuctionListPage";
 import {AuctionFilters} from "./component/AuctionFilters";
+import {AuctionCategoriesStore} from "../../store/AuctionCategoriesStore";
+import {AuctionCategoriesStoreProvider, useAuctionCategoriesStore} from "../../store/auction_categories_store_context";
 
 
 export const AuctionListPageRoot: React.FC = observer(() => {
   const store = useLocalObservable(() => new AuctionListStore())
+  const categories = useLocalObservable(() => new AuctionCategoriesStore())
 
   return (
-    <AuctionListStoreProvider store={store}>
-      <AuctionListContent/>
-    </AuctionListStoreProvider>
+    <AuctionCategoriesStoreProvider store={categories}>
+      <AuctionListStoreProvider store={store}>
+        <AuctionListContent/>
+      </AuctionListStoreProvider>
+    </AuctionCategoriesStoreProvider>
   )
 })
 
 const AuctionListContent = observer(() => {
   const store = useAuctionListStore()
+  const categories = useAuctionCategoriesStore()
 
   return (
     <Box
@@ -28,7 +34,7 @@ const AuctionListContent = observer(() => {
         flexDirection: 'column'
       }}
     >
-      {store.isLoading && <LinearProgress sx={{width: '100%'}} color='secondary'/>}
+      {(store.isLoading || categories.isLoading) && <LinearProgress sx={{width: '100%'}} color='secondary'/>}
 
       <Box  sx={{width: '100%', maxWidth: 'xl', marginTop: 3, marginBottom: 3}}>
         <Typography variant='h3' sx={{marginBottom: 1}}>Browse Auctions</Typography>

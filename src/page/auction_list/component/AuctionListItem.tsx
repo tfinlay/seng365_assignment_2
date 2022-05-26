@@ -19,13 +19,15 @@ import {AuctionListPageAuction} from "../AuctionListPageAuction";
 import intervalToDuration from "date-fns/intervalToDuration";
 import {LocalOffer, Tag} from "@mui/icons-material";
 import {UserInfoRow} from "../../../component/UserInfoRow";
+import {useAuctionSupplierStore} from "../auction_supplier_context";
+import {useAuctionCategoriesStore} from "../../../store/auction_categories_store_context";
 
 interface AuctionListItemProps {
   index: number
 }
 export const AuctionListItem: React.FC<AuctionListItemProps> = observer(({index}) => {
-  const store = useAuctionListStore()
-  const auction = store.page.auctions![index]
+  const page = useAuctionSupplierStore()
+  const auction = page.auctions![index]
 
   return (
     <Card sx={{minWidth: 250, flex: 1, display: 'flex'}}>
@@ -85,9 +87,9 @@ interface AuctionListItemSubComponentProps {
 }
 
 const AuctionListItemCategory: React.FC<AuctionListItemSubComponentProps> = observer(({auction}) => {
-  const store = useAuctionListStore()
+  const categories = useAuctionCategoriesStore()
 
-  if (store.categories.isLoading) {
+  if (categories.isLoading) {
     return (
       <Tooltip title='Loading Category'>
         <Typography variant='body1'><Skeleton/></Typography>
@@ -95,7 +97,7 @@ const AuctionListItemCategory: React.FC<AuctionListItemSubComponentProps> = obse
     )
   }
   else {
-    const categoryName = store.categories.categoriesById?.get(auction.auction.categoryId)
+    const categoryName = categories.categoriesById?.get(auction.auction.categoryId)
 
     if (categoryName !== undefined) {
       return (

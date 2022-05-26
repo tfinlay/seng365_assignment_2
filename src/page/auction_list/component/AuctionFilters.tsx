@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import {runInAction} from "mobx";
 import {AuctionListFiltersStatus} from "../AuctionListPageStore";
+import {useAuctionCategoriesStore} from "../../../store/auction_categories_store_context";
 
 export const AuctionFilters: React.FC = observer(() => {
   const store = useAuctionListStore()
@@ -93,6 +94,7 @@ const AuctionFiltersFormCategoriesSelector: React.FC = observer(() => {
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
 
+  const categories = useAuctionCategoriesStore()
   const store = useAuctionListStore()
   const filters = store.filters
 
@@ -110,14 +112,14 @@ const AuctionFiltersFormCategoriesSelector: React.FC = observer(() => {
     filters.setCategoryIds(actualValue)
   }, [filters])
 
-  if (store.categories.isLoading) {
+  if (categories.isLoading) {
     return (
       <Tooltip title='Loading categories...'>
         <Skeleton variant='rectangular'/>
       </Tooltip>
     )
   }
-  else if (store.categories.categoriesById !== null) {
+  else if (categories.categoriesById !== null) {
     return (
       <FormControl sx={{marginTop: 1}}>
         <InputLabel id="filter-categories-label">Categories</InputLabel>
@@ -128,7 +130,7 @@ const AuctionFiltersFormCategoriesSelector: React.FC = observer(() => {
           value={filters.categoryIds}
           onChange={onChange}
           input={<OutlinedInput label="Categories" />}
-          renderValue={(selected) => selected.map(id => store.categories.categoriesById?.get(id) ?? 'UNKNOWN').join(', ')}
+          renderValue={(selected) => selected.map(id => categories.categoriesById?.get(id) ?? 'UNKNOWN').join(', ')}
           MenuProps={{
             PaperProps: {
               style: {
@@ -138,7 +140,7 @@ const AuctionFiltersFormCategoriesSelector: React.FC = observer(() => {
             }
           }}
         >
-          {Array.from(store.categories.categoriesById.entries()).map(([id, name]) => (
+          {Array.from(categories.categoriesById.entries()).map(([id, name]) => (
             <MenuItem key={id} value={id}>
               <Checkbox checked={filters.categoryIds.indexOf(id) > -1} />
               <ListItemText primary={name} />

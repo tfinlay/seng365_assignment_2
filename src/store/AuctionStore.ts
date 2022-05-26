@@ -1,6 +1,5 @@
 import {PhotoStore} from "./PhotoStore";
 import {AuctionDetailsStore} from "./AuctionDetailsStore";
-import {action} from "mobx";
 
 export class AuctionStore {
   readonly id: number

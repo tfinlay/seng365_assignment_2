@@ -9,7 +9,6 @@ import {AuctionCategoriesStore} from "../../store/AuctionCategoriesStore";
 export class AuctionListStore {
   readonly page: AuctionListPageStore
   readonly filters: AuctionListPageFiltersStore
-  readonly categories: AuctionCategoriesStore
 
   constructor() {
     makeObservable(this, {
@@ -24,14 +23,12 @@ export class AuctionListStore {
 
     this.page = new AuctionListPageStore(0)
     this.filters = new AuctionListPageFiltersStore()
-    this.categories = new AuctionCategoriesStore()
 
-    this.categories.fetchCategories()
     this.page.reload(this.filters.buildFilters())
   }
 
   get isLoading(): boolean {
-    return this.page.isLoading || this.categories.isLoading
+    return this.page.isLoading
   }
 
   async reloadPage() {

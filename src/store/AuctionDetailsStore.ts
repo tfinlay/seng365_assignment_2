@@ -10,7 +10,7 @@ import {makeApiPath} from "../util/network_util";
 import parseISO from "date-fns/parseISO";
 import {handleServerError} from "../util/error_util";
 
-interface AuctionDetails {
+export interface AuctionDetails {
   auctionId: number
   title: string
   categoryId: number

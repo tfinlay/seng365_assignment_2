@@ -6,9 +6,8 @@ import {Link as RouterLink, Navigate} from "react-router-dom";
 import {LoadStatusError} from "../../../util/LoadStatus";
 import {ErrorPresenter} from "../../../component/ErrorPresenter";
 import {UserInfoRow} from "../../../component/UserInfoRow";
-import {useAuctionListStore} from "../../auction_list/auction_list_store_context";
 import {LocalOffer} from "@mui/icons-material";
-import {AuctionViewBidsStoreBid} from "../AuctionViewBidsStore";
+import {useAuctionCategoriesStore} from "../../../store/auction_categories_store_context";
 
 export const AuctionViewPageOverviewColumn: React.FC = observer(() => {
   const details = useAuctionViewStore().auction.details
@@ -25,7 +24,7 @@ export const AuctionViewPageOverviewColumn: React.FC = observer(() => {
   else {
     return (
       <Box sx={{padding: 1}}>
-        <Typography variant="subtitle1" color="error">Failed to load category information:</Typography>
+        <Typography variant="subtitle1" color="error">Failed to load auction information:</Typography>
         <Typography variant="body1" color="error">
           {(details.loadStatus instanceof LoadStatusError) ? (
             <ErrorPresenter error={details.loadStatus.error}/>
@@ -82,8 +81,9 @@ const AuctionViewPageOverviewColumnContent: React.FC = observer(() => {
 
 const AuctionViewPageOverviewColumnItemCategory: React.FC = observer(() => {
   const store = useAuctionViewStore()
+  const categories = useAuctionCategoriesStore()
 
-  if (store.categories.isLoading) {
+  if (categories.isLoading) {
     return (
       <Tooltip title='Loading Category'>
         <Typography variant='body1'><Skeleton/></Typography>
@@ -91,7 +91,7 @@ const AuctionViewPageOverviewColumnItemCategory: React.FC = observer(() => {
     )
   }
   else {
-    const categoryName = store.categories.categoriesById?.get(store.auction.details.auction!.categoryId)
+    const categoryName = categories.categoriesById?.get(store.auction.details.auction!.categoryId)
 
     if (categoryName !== undefined) {
       return (
@@ -101,7 +101,7 @@ const AuctionViewPageOverviewColumnItemCategory: React.FC = observer(() => {
     else {
       return (
         <Tooltip title={`Category ID is: ${store.auction.details.auction!.categoryId}`}>
-          <Typography variant='body1' color='red' sx={{fontStyle: 'italic'}} onClick={() => store.categories.fetchCategories()}>
+          <Typography variant='body1' color='red' sx={{fontStyle: 'italic'}} onClick={() => categories.fetchCategories()}>
             Failed to find category. Click to reload.
           </Typography>
         </Tooltip>

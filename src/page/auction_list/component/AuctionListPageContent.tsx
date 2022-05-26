@@ -6,9 +6,10 @@ import {AuctionListItem} from "./AuctionListItem";
 import {AuctionListFiltersSortBy} from "../AuctionListPageStore";
 import {runInAction} from "mobx";
 import {AuctionPaginationControl} from "./AuctionPaginationControl";
+import {useAuctionSupplierStore} from "../auction_supplier_context";
 
 export const AuctionListPageContent: React.FC = observer(() => {
-  const store = useAuctionListStore()
+  const page = useAuctionSupplierStore()
 
   return (
     <>
@@ -19,7 +20,7 @@ export const AuctionListPageContent: React.FC = observer(() => {
       </Box>
 
       <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 2}}>
-        {store.page.auctions!.map((auction, index) => (
+        {page.auctions!.map((auction, index) => (
           <AuctionListItem key={`${auction.auction.auctionId}`} index={index}/>
         ))}
       </Box>
