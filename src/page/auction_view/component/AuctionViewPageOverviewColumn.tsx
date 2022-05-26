@@ -8,6 +8,8 @@ import {ErrorPresenter} from "../../../component/ErrorPresenter";
 import {UserInfoRow} from "../../../component/UserInfoRow";
 import {LocalOffer} from "@mui/icons-material";
 import {useAuctionCategoriesStore} from "../../../store/auction_categories_store_context";
+import {PlaceBidButton} from "../../auction_list/component/place_bid_popup/PlaceBidButton";
+import {ApplicationStore} from "../../../store/ApplicationStore";
 
 export const AuctionViewPageOverviewColumn: React.FC = observer(() => {
   const details = useAuctionViewStore().auction.details
@@ -45,6 +47,7 @@ const AuctionViewPageOverviewColumnSkeleton: React.FC = () => {
         <Skeleton variant='circular' height={48} width={48} sx={{flex: 0, flexBasis: 48}}/>
         <Skeleton sx={{flex: 1}}/>
       </Stack>
+      <PlaceBidButton/>
     </Stack>
   )
 }
@@ -75,6 +78,8 @@ const AuctionViewPageOverviewColumnContent: React.FC = observer(() => {
         <Typography variant='h6' component='span' sx={{paddingRight: 1}}>Reserve</Typography>
         <Typography variant='h5' component='span'>${auction.reserve}.00</Typography>
       </Box>
+
+      <PlaceBidButton/>
     </Stack>
   )
 })

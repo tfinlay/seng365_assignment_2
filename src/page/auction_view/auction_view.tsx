@@ -47,7 +47,7 @@ export const AuctionViewPage: React.FC<AuctionViewPageProps> = observer(({auctio
                       <img
                         src={src}
                         style={{
-                          maxWidth: '100%',
+                          width: '100%',
                           maxHeight: 400
                         }}
                         alt='Auction item'

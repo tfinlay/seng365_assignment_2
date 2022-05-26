@@ -24,3 +24,16 @@ export const passwordFieldValidator = (value: string) => {
   }
   return notEmptyRes
 }
+export const positiveIntegerValidator = (value: string) => {
+  if (!/^\d+$/.test(value)) {
+    return "Please enter a whole number"
+  }
+
+  const val = parseInt(value, 10)
+  if (isNaN(val)) {
+    return "Please enter a whole number"
+  } else if (val <= 0) {
+    return "Please enter a positive number"
+  }
+  return null
+}
