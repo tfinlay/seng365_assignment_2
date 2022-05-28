@@ -71,6 +71,16 @@ const LoggedInActions: React.FC = observer(() => {
 
   return (
     <>
+      <Button
+        size="large"
+        component={Link}
+        to="/auction/create"
+        variant="contained"
+        color="secondary"
+      >
+        Create Auction
+      </Button>
+
       <IconButton
         onClick={onClick}
         color="neutral"

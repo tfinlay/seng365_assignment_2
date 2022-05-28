@@ -115,7 +115,9 @@ export const PlaceBidEntryField: React.FC<PlaceBidEntryFieldProps> = observer(({
     })
   }, [localStore.amount, highestBidSoFar])
 
-  const onSubmit = useCallback(async () => {
+  const onSubmit = useCallback(async (evt: React.FormEvent) => {
+    evt.preventDefault()
+
     if (extraCustomValidator(localStore.amount, highestBidSoFar, true) === null) {
       // Loading time!
       const success = await localStore.validateAndSubmitBid(store.auction.id)
@@ -128,7 +130,7 @@ export const PlaceBidEntryField: React.FC<PlaceBidEntryFieldProps> = observer(({
   }, [store.auction.id, store.bids, onClose, localStore, highestBidSoFar])
 
   return (
-    <Box sx={{display: 'flex', flexDirection: 'row'}}>
+    <Box component='form' sx={{display: 'flex', flexDirection: 'row'}} onSubmit={onSubmit}>
       <Tooltip title='Cancel'>
         <IconButton edge='start' color='error' size='small' sx={{flex: 0}} onClick={onClose} disabled={localStore.isLoading}>
           <Cancel/>
@@ -142,6 +144,7 @@ export const PlaceBidEntryField: React.FC<PlaceBidEntryFieldProps> = observer(({
 
         sx={{flex: 1}}
         disabled={localStore.isLoading}
+        autoFocus
 
         value={localStore.amount.value}
         onChange={(evt) => localStore.amount.setValue(evt.target.value)}
@@ -158,7 +161,7 @@ export const PlaceBidEntryField: React.FC<PlaceBidEntryFieldProps> = observer(({
           endAdornment: (
             <InputAdornment position='end'>
               <Tooltip title='Submit Bid'>
-                <IconButton edge='end' color='primary' onClick={onSubmit} disabled={localStore.isLoading}>
+                <IconButton edge='end' color='primary' type='submit' disabled={localStore.isLoading}>
                   <Send/>
                 </IconButton>
               </Tooltip>

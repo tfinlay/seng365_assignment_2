@@ -130,7 +130,16 @@ const AuctionListItemClosingChip: React.FC<AuctionListItemSubComponentProps> = o
       end: endDate
     })
 
-    if (timeLeft.days! > 1) {
+    if (timeLeft.years! > 1) {
+      message = `Closes in ${timeLeft.years} years`
+    }
+    else if (timeLeft.months! > 1) {
+      message = `Closes in ${timeLeft.months} months`
+    }
+    else if (timeLeft.weeks! > 1) {
+      message = `Closes in ${timeLeft.weeks} weeks`
+    }
+    else if (timeLeft.days! > 1) {
       message = `Closes in ${timeLeft.days} days`
     }
     else if (timeLeft.days === 1) {

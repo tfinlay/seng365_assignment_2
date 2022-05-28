@@ -1,4 +1,4 @@
-import React from "react";
+import React, {FormEventHandler} from "react";
 import {Card, CardContent, CardHeader, LinearProgress} from "@mui/material";
 import {SxProps} from "@mui/system";
 import {Theme} from "@mui/material/styles";
@@ -7,7 +7,7 @@ interface FormCardProps {
   title: React.ReactNode
   subtitle?: string
   loading: boolean
-  onSubmit: (evt: React.FormEvent) => any
+  onSubmit: FormEventHandler
 
   actions?: React.ReactNode
 

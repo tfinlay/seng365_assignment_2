@@ -19,7 +19,7 @@ export interface AuctionDetails {
   sellerLastName: string
   reserve: number
   numBids: number
-  highestBid: number | null
+  // highestBid: number | null  // Not reliable over the lifetime of the store, as bids may have been placed by the current user in the meantime.
   endDate: string
   description: string
 }

@@ -5,10 +5,7 @@ import {
   Button,
   Card,
   CardActions,
-  CardContent,
-  CardHeader,
-  IconButton, InputAdornment,
-  LinearProgress,
+  IconButton,
   TextField,
   Tooltip,
   Typography

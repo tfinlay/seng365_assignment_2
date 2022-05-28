@@ -12,6 +12,7 @@ import {ApplicationStore} from "./store/ApplicationStore";
 import {OtherUserProfilePage, ProfilePage} from "./page/profile/profile";
 import {AuctionViewPage} from "./page/auction_view/auction_view";
 import {AuctionPageLoader} from "./component/auction/AuctionPageLoader";
+import {CreateAuctionPage} from "./page/create_auction/create_auction";
 
 const App = () => {
   const systemTheme = useSystemTheme()
@@ -53,10 +54,14 @@ const AppRoutes: React.FC = observer(() => {
       <Route index element={<AuctionListPageRoot/>}/>
       {!isLoggedIn && <Route path="/login" element={<LoginPage/>}/>}
       {!isLoggedIn && <Route path="/register" element={<RegisterPage/>}/>}
+
       {isLoggedIn && <Route path="/profile" element={<ProfilePage user={ApplicationStore.main.user!}/>} />}
-      {isLoggedIn && <Route path={`/profile/${ApplicationStore.main.user!.id}`} element={<Navigate to='/profile'/>}/>}
+      {isLoggedIn && <Route path={`/profile/${ApplicationStore.main.user!.id}`} element={<Navigate to='/profile' replace/>}/>}
       <Route path="/profile/:userId" element={<OtherUserProfilePage/>}/>
+
+      {isLoggedIn && <Route path="/auction/create" element={<CreateAuctionPage/>}/>}
       <Route path="/auction/:auctionId" element={<AuctionPageLoader pageBuilder={(auction) => <AuctionViewPage auction={auction}/>}/>}/>
+
       <Route path="*" element={<NotFoundPage/>} />
     </Routes>
   )

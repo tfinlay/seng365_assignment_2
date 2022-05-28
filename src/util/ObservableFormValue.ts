@@ -35,16 +35,20 @@ export class ObservableFormValue<T = string> {
 
   validate(): boolean {
     this.valueEdited = true
-    return this.error === null
+    return this.getError() === null
   }
 
-  get error(): string | null {
+  protected getError() {
     if (this.valueEdited) {
       return this.errorGetter(this.value)
     }
     else {
       return null
     }
+  }
+
+  get error(): string | null {
+    return this.getError()
   }
 
   get hasError(): boolean {

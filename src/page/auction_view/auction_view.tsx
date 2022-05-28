@@ -41,22 +41,27 @@ export const AuctionViewPage: React.FC<AuctionViewPageProps> = observer(({auctio
             }}>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={5}>
-                  <PhotoBlobView
-                    image={store.auction.photo.imageData}
-                    imageBuilder={(src) => (
-                      <img
-                        src={src}
-                        style={{
-                          width: '100%',
-                          maxHeight: 400
-                        }}
-                        alt='Auction item'
-                      />
-                    )}
-                    defaultBuilder={() => (
-                      <Skeleton variant='rectangular' height={400}/>
-                    )}
-                  />
+                  {(store.auction.photo.isLoading || store.auction.photo.hasImage) ? (
+                    <PhotoBlobView
+                      image={store.auction.photo.imageData}
+                      imageBuilder={(src) => (
+                        <img
+                          src={src}
+                          style={{
+                            width: '100%',
+                            maxHeight: 400,
+                            objectFit: 'contain'
+                          }}
+                          alt='Auction item'
+                        />
+                      )}
+                      defaultBuilder={() => (
+                        <Skeleton variant='rectangular' height={400}/>
+                      )}
+                    />
+                  ) : (
+                    <Skeleton variant='rectangular' height={400} animation={false}/>
+                  )}
                 </Grid>
 
                 <Grid item xs={12} sm={3}>
