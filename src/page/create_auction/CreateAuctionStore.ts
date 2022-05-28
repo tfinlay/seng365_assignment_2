@@ -1,6 +1,6 @@
 import {action, computed, makeObservable, observable, runInAction} from "mobx";
 import {ObservableFormValue} from "../../util/ObservableFormValue";
-import {notEmptyFieldValidator, positiveIntegerValidator} from "../../util/validation";
+import {futureDateValidator, notEmptyFieldValidator, positiveIntegerValidator} from "../../util/validation";
 import {AuctionCategoriesStore} from "../../store/AuctionCategoriesStore";
 import {
   LoadStatus,
@@ -9,12 +9,13 @@ import {
   LoadStatusNotYetAttempted,
   LoadStatusPending
 } from "../../util/LoadStatus";
-import {makeApiPath} from "../../util/network_util";
+import {formatDateForAuction, makeApiPath} from "../../util/network_util";
 import {ApplicationStore} from "../../store/ApplicationStore";
 import {handleServerError} from "../../util/error_util";
-import {format} from "date-fns";
+import {AuctionEditFormStore} from "../../component/auction/edit/AuctionEditFormStore";
 
-export class CreateAuctionStore {
+
+export class CreateAuctionStore implements AuctionEditFormStore {
   readonly title: ObservableFormValue
   readonly category: ObservableFormValue<number | null>
   readonly endDate: ObservableFormValue<Date | null>
@@ -41,20 +42,10 @@ export class CreateAuctionStore {
 
     this.title = new ObservableFormValue<string>("", notEmptyFieldValidator)
     this.category = new ObservableFormValue<number | null>(null, this.categoryIdValidator.bind(this))
-    this.endDate = new ObservableFormValue<Date | null>(null, this.dateValidator.bind(this))
+    this.endDate = new ObservableFormValue<Date | null>(null, futureDateValidator)
     this.description = new ObservableFormValue<string>("", notEmptyFieldValidator)
     this.reserve = new ObservableFormValue<string>("1", positiveIntegerValidator)
     this.photo = new ObservableFormValue<File | null>(null, this.photoValidator.bind(this))
-  }
-
-  protected dateValidator(value: Date | null): string | null {
-    if (value === null) {
-      return "An end date is required"
-    }
-    else if (value < new Date()) {
-      return "Please choose a date in the future"
-    }
-    return null
   }
 
   protected categoryIdValidator(value: number | null): string | null {
@@ -98,7 +89,7 @@ export class CreateAuctionStore {
           title: this.title.value,
           description: this.description.value,
           categoryId: this.category.value,
-          endDate: format(this.endDate.value!, "yyyy-MM-dd HH:mm:ss.SSS"),
+          endDate: formatDateForAuction(this.endDate.value!),
           reserve: parseInt(this.reserve.value, 10)
         })
       })

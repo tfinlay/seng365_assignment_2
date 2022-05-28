@@ -4,8 +4,7 @@ import {useAuctionViewStore} from "../auction_view_store_context";
 import {AuctionViewSimilarStore} from "../AuctionViewSimilarStore";
 import {AuctionDetails} from "../../../store/AuctionDetailsStore";
 import {observable} from "mobx";
-import {AuctionViewStore} from "../AuctionViewStore";
-import {Box, Button, Skeleton, Typography} from "@mui/material";
+import {Box, Skeleton, Typography} from "@mui/material";
 import {LoadStatusError} from "../../../util/LoadStatus";
 import {ErrorPresenter} from "../../../component/ErrorPresenter";
 import {AuctionSupplierProvider} from "../../auction_list/auction_supplier_context";
@@ -44,10 +43,14 @@ const AuctionViewPageSimilarAuctionsRowContent: React.FC = observer(() => {
   const [similarStore, setSimilarStore] = useState<AuctionViewSimilarStore>(() => makeStore(auction))
 
   useEffect(() => {
-    if (similarStore.auction.auctionId !== auction.auctionId) {
+    if (
+      similarStore.auction.auctionId !== auction.auctionId
+      || similarStore.auction.sellerId !== auction.sellerId
+      || similarStore.auction.categoryId !== auction.categoryId
+    ) {
       setSimilarStore(makeStore(auction))
     }
-  }, [similarStore.auction.auctionId, auction])
+  }, [similarStore.auction.auctionId, auction.sellerId, auction.categoryId, auction])
 
   let content
   if (similarStore.isLoading) {

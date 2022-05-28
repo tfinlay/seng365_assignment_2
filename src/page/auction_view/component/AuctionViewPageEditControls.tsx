@@ -1,106 +1,17 @@
-import React, {useCallback, useState} from "react";
+import React from "react";
 import {observer} from "mobx-react-lite";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  IconButton, LinearProgress,
-  Tooltip
-} from "@mui/material";
-import {Check, Delete, Edit} from "@mui/icons-material";
-import {useAuctionViewStore} from "../auction_view_store_context";
-import {LoadStatusDone, LoadStatusError, LoadStatusPending} from "../../../util/LoadStatus";
-import {useNavigate} from "react-router-dom";
-import {ErrorPresenter} from "../../../component/ErrorPresenter";
+import {Box, Button} from "@mui/material";
+import {Edit} from "@mui/icons-material";
+import {AuctionViewPageEditControlsDelete} from "./AuctionViewPageEditControlsDelete";
+import {AuctionViewPageEditControlsEdit} from "./AuctionViewPageEditControlsEdit";
 
 export const AuctionViewPageEditControls: React.FC = observer(() => {
   return (
     <Box sx={{display: 'flex', flexDirection: 'row'}}>
-      <Button
-        sx={{
-          flex: 1
-        }}
-      >
-        <Edit/>&nbsp;&nbsp;Edit Auction
-      </Button>
+      <AuctionViewPageEditControlsEdit/>
 
       <AuctionViewPageEditControlsDelete/>
     </Box>
   )
 })
 
-const AuctionViewPageEditControlsDelete: React.FC = observer(() => {
-  const navigate = useNavigate()
-  const store = useAuctionViewStore()
-  const [open, setOpen] = useState<boolean>(false)
-
-  const openPopup = useCallback(() => {
-    setOpen(true)
-  }, [])
-
-  const closePopup = useCallback(() => {
-    if (!store.isDeleting && !(store.deleteStatus instanceof LoadStatusDone)) {
-      setOpen(false)
-    }
-
-  }, [store.isDeleting, store.deleteStatus])
-
-  const onDelete = useCallback(async () => {
-    const success = await store.deleteAuction()
-    if (success) {
-      setTimeout(() => {
-        navigate("/")
-      }, 750)
-    }
-  }, [navigate, store])
-
-  return (
-    <>
-      <Tooltip title='Delete Auction'>
-        <IconButton
-          color='error'
-          onClick={openPopup}
-        >
-          <Delete/>
-        </IconButton>
-      </Tooltip>
-
-      <Dialog open={open} onClose={closePopup}>
-        {(store.isDeleting) && <LinearProgress color='error'/>}
-
-        <DialogTitle>Are you sure?</DialogTitle>
-        <DialogContent>
-          <DialogContentText>Are you sure you want to delete this auction?</DialogContentText>
-          <DialogContentText>This action cannot be reversed.</DialogContentText>
-          {(store.deleteStatus instanceof LoadStatusError) && (
-            <DialogContentText color='error'>
-              Failed to delete auction:<br/><ErrorPresenter error={store.deleteStatus.error}/>
-            </DialogContentText>
-          )}
-        </DialogContent>
-
-        <DialogActions sx={{display: 'flex', justifyContent: 'space-between'}}>
-          <Button
-            onClick={closePopup}
-            disabled={store.isDeleting}
-          >
-            Cancel
-          </Button>
-
-          <Button
-            onClick={(store.deleteStatus instanceof LoadStatusDone) ? undefined : onDelete}
-            variant='contained'
-            color={(store.deleteStatus instanceof LoadStatusDone) ? 'success' : 'error'}
-            disabled={store.isDeleting}
-          >
-            {(store.deleteStatus instanceof LoadStatusDone) ? <Check /> : "Yes, proceed"}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
-  )
-})

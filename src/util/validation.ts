@@ -24,6 +24,7 @@ export const passwordFieldValidator = (value: string) => {
   }
   return notEmptyRes
 }
+
 export const positiveIntegerValidator = (value: string) => {
   if (!/^\d+$/.test(value)) {
     return "Please enter a whole number"
@@ -34,6 +35,16 @@ export const positiveIntegerValidator = (value: string) => {
     return "Please enter a whole number"
   } else if (val <= 0) {
     return "Please enter a positive number"
+  }
+  return null
+}
+
+export const futureDateValidator = (value: Date | null) => {
+  if (value === null) {
+    return "An end date is required"
+  }
+  else if (value < new Date()) {
+    return "Please choose a date in the future"
   }
   return null
 }
