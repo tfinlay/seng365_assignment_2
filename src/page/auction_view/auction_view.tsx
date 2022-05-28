@@ -5,7 +5,19 @@ import {observable} from "mobx";
 import {AuctionViewStore} from "./AuctionViewStore";
 import {Centred} from "../../component/Centred";
 import {AuctionViewStoreProvider, useAuctionViewStore} from "./auction_view_store_context";
-import {Box, Card, CardContent, CardHeader, Chip, Grid, Skeleton, Stack, Tooltip, Typography} from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  Chip,
+  Grid,
+  LinearProgress,
+  Skeleton,
+  Stack,
+  Tooltip,
+  Typography
+} from "@mui/material";
 import {LoadStatusDone, LoadStatusError} from "../../util/LoadStatus";
 import {ErrorPresenter} from "../../component/ErrorPresenter";
 import {Navigate} from "react-router-dom";
@@ -36,6 +48,8 @@ export const AuctionViewPage: React.FC<AuctionViewPageProps> = observer(({auctio
       <AuctionCategoriesStoreProvider store={categories}>
         <AuctionViewStoreProvider store={store}>
           <Card sx={{minWidth: 'sm', maxWidth: "lg", width: '100%'}}>
+            {(store.bids.isLoading || store.auction.photo.isLoading || store.auction.details.isLoading) && <LinearProgress/>}
+
             <CardContent sx={{
               flexDirection: "row"
             }}>
