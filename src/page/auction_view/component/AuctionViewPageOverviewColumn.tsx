@@ -83,8 +83,10 @@ const AuctionViewPageOverviewColumnContent: React.FC = observer(() => {
 
       <PlaceBidButton/>
 
-      {(store.isEditable) && (
+      {(store.isEditable) ? (
         <AuctionViewPageEditControls/>
+      ) : (
+        <Typography variant='body2'>Editing is unavailable after a bid has been placed.</Typography>
       )}
     </Stack>
   )
