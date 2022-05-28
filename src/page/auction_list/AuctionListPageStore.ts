@@ -12,6 +12,7 @@ import {
 import {AuctionListPageAuction, IAuctionListPageAuction} from "./AuctionListPageAuction";
 import {makeApiPath} from "../../util/network_util";
 import {handleServerError} from "../../util/error_util";
+import {PageableAuctionStorePage} from "../../component/auction/pagination/PageableAuctionStore";
 
 export type AuctionListFiltersSortBy = `${'ALPHABETICAL' | 'BIDS' | 'RESERVE'}_${'ASC' | 'DESC'}` | `CLOSING_${'SOON'|'LAST'}`
 export type AuctionListFiltersStatus = "ANY" | "OPEN" | "CLOSED"
@@ -36,8 +37,8 @@ export interface AuctionSupplier {
   isLoading: boolean
 }
 
-export class AuctionListPageStore implements AuctionSupplier {
-  static readonly PAGE_SIZE = 10
+export class AuctionListPageStore implements AuctionSupplier, PageableAuctionStorePage {
+  readonly pageSize = 10
 
   pageIndex: number
   totalResultCount: number | null = null
@@ -52,6 +53,7 @@ export class AuctionListPageStore implements AuctionSupplier {
       loadStatus: observable,
       auctions: observable,
 
+      auctionCount: computed,
       maxPageIndex: computed,
       isLoading: computed,
 
@@ -65,11 +67,15 @@ export class AuctionListPageStore implements AuctionSupplier {
     this.pageIndex = pageIndex
   }
 
+  get auctionCount(): number | null {
+    return this.auctions?.length ?? null
+  }
+
   get maxPageIndex(): number | null {
     if (this.totalResultCount === null) {
       return null
     }
-    return Math.floor(this.totalResultCount / AuctionListPageStore.PAGE_SIZE)
+    return Math.ceil(this.totalResultCount / this.pageSize) - 1
   }
 
   get isLoading(): boolean {
@@ -92,10 +98,10 @@ export class AuctionListPageStore implements AuctionSupplier {
   }
 
   async goToNextPage(filters: AuctionListFilters) {
-    let maxPageIndex = (this.maxPageIndex === null) ? Infinity : this.maxPageIndex
+    const maxPageIndex = (this.maxPageIndex === null) ? Infinity : this.maxPageIndex
 
     if (this.pageIndex + 1 > maxPageIndex) {
-      throw new Error("Already at the next page")
+      throw new Error("Already at the last page")
     }
     else {
       this.pageIndex += 1
@@ -124,8 +130,8 @@ export class AuctionListPageStore implements AuctionSupplier {
     const url = new URL(makeApiPath('/auctions'));
 
     // Pagination
-    url.searchParams.set("startIndex", (this.pageIndex * AuctionListPageStore.PAGE_SIZE).toString(10))
-    url.searchParams.set("count", AuctionListPageStore.PAGE_SIZE.toString(10))
+    url.searchParams.set("startIndex", (this.pageIndex * this.pageSize).toString(10))
+    url.searchParams.set("count", this.pageSize.toString(10))
 
     // Filters
     url.searchParams.set("q", filters.query)

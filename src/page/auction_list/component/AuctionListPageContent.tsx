@@ -5,22 +5,21 @@ import {Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from 
 import {AuctionListItem} from "./AuctionListItem";
 import {AuctionListFiltersSortBy} from "../AuctionListPageStore";
 import {runInAction} from "mobx";
-import {AuctionPaginationControl} from "./AuctionPaginationControl";
-import {useAuctionSupplierStore} from "../auction_supplier_context";
+import {AuctionPaginationControl} from "../../../component/auction/pagination/AuctionPaginationControl";
 
 export const AuctionListPageContent: React.FC = observer(() => {
-  const page = useAuctionSupplierStore()
+  const store = useAuctionListStore()
 
   return (
     <>
       <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 2}}>
-        <AuctionPaginationControl/>
+        <AuctionPaginationControl store={store}/>
 
         <AuctionListPageSortSelector/>
       </Box>
 
       <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 2}}>
-        {page.auctions!.map((auction, index) => (
+        {store.page.auctions!.map((auction, index) => (
           <AuctionListItem key={`${auction.auction.auctionId}`} index={index}/>
         ))}
       </Box>

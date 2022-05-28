@@ -13,6 +13,7 @@ import {OtherUserProfilePage, ProfilePage} from "./page/profile/profile";
 import {AuctionViewPage} from "./page/auction_view/auction_view";
 import {AuctionPageLoader} from "./component/auction/AuctionPageLoader";
 import {CreateAuctionPage} from "./page/create_auction/create_auction";
+import { MyAuctionsPage } from './page/my_auctions/my_auctions';
 
 const App = () => {
   const systemTheme = useSystemTheme()
@@ -61,6 +62,8 @@ const AppRoutes: React.FC = observer(() => {
 
       {isLoggedIn && <Route path="/auction/create" element={<CreateAuctionPage/>}/>}
       <Route path="/auction/:auctionId" element={<AuctionPageLoader pageBuilder={(auction) => <AuctionViewPage auction={auction}/>}/>}/>
+
+      {isLoggedIn && <Route path="/my_auctions" element={<MyAuctionsPage/>}/>}
 
       <Route path="*" element={<NotFoundPage/>} />
     </Routes>

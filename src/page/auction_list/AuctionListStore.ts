@@ -5,8 +5,9 @@ import {AuctionListPageStore} from "./AuctionListPageStore";
 import {AuctionListPageFiltersStore} from "./AuctionListPageFiltersStore";
 import {action, computed, makeObservable} from "mobx";
 import {AuctionCategoriesStore} from "../../store/AuctionCategoriesStore";
+import {PageableAuctionStore} from "../../component/auction/pagination/PageableAuctionStore";
 
-export class AuctionListStore {
+export class AuctionListStore implements PageableAuctionStore {
   readonly page: AuctionListPageStore
   readonly filters: AuctionListPageFiltersStore
 

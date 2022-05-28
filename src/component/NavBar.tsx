@@ -69,6 +69,11 @@ const LoggedInActions: React.FC = observer(() => {
     navigate("/profile")
   }, [onClose, navigate])
 
+  const onViewMyAuctionsClick = useCallback(() => {
+    onClose()
+    navigate("/my_auctions")
+  }, [onClose, navigate])
+
   return (
     <>
       <Button
@@ -94,7 +99,8 @@ const LoggedInActions: React.FC = observer(() => {
         anchorEl={anchorEl}
         onClose={onClose}
       >
-        <MenuItem divider onClick={onViewProfileClick}>My Profile</MenuItem>
+        <MenuItem onClick={onViewProfileClick}>My Profile</MenuItem>
+        <MenuItem divider onClick={onViewMyAuctionsClick}>My Auctions</MenuItem>
         <MenuItem onClick={onLogout}>Log Out</MenuItem>
       </Menu>
     </>

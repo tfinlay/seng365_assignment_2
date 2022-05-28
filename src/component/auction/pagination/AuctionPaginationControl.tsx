@@ -1,12 +1,15 @@
 import React, {useCallback} from "react";
 import {observer} from "mobx-react-lite";
-import {useAuctionListStore} from "../auction_list_store_context";
+import {useAuctionListStore} from "../../../page/auction_list/auction_list_store_context";
 import {IconButton, Stack, Tooltip, Typography} from "@mui/material";
 import {ChevronLeft, ChevronRight, FirstPage, LastPage} from "@mui/icons-material";
-import {AuctionListPageStore} from "../AuctionListPageStore";
+import {AuctionListPageStore} from "../../../page/auction_list/AuctionListPageStore";
+import {PageableAuctionStore} from "./PageableAuctionStore";
 
-export const AuctionPaginationControl: React.FC = observer(() => {
-  const store = useAuctionListStore()
+interface AuctionPaginationControlProps {
+  store: PageableAuctionStore
+}
+export const AuctionPaginationControl: React.FC<AuctionPaginationControlProps> = observer(({store}) => {
   const page = store.page
 
   const onFirstPageClick = useCallback(() => {
@@ -43,7 +46,7 @@ export const AuctionPaginationControl: React.FC = observer(() => {
             </>
           )}
 
-          <Tooltip title={`Showing results ${page.pageIndex * AuctionListPageStore.PAGE_SIZE + 1} - ${page.pageIndex * AuctionListPageStore.PAGE_SIZE + (page.auctions?.length ?? 0)}`}>
+          <Tooltip title={`Showing results ${page.pageIndex * page.pageSize + 1} - ${page.pageIndex * page.pageSize + (page.auctionCount ?? 0)}`}>
             <Typography variant='body1' color='text.secondary'>Page {page.pageIndex + 1} / {page.maxPageIndex! + 1}</Typography>
           </Tooltip>
 
