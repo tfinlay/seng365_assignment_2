@@ -10,6 +10,7 @@ import {LocalOffer} from "@mui/icons-material";
 import {useAuctionCategoriesStore} from "../../../store/auction_categories_store_context";
 import {PlaceBidButton} from "../../auction_list/component/place_bid_popup/PlaceBidButton";
 import {ApplicationStore} from "../../../store/ApplicationStore";
+import {AuctionViewPageEditControls} from "./AuctionViewPageEditControls";
 
 export const AuctionViewPageOverviewColumn: React.FC = observer(() => {
   const details = useAuctionViewStore().auction.details
@@ -53,7 +54,8 @@ const AuctionViewPageOverviewColumnSkeleton: React.FC = () => {
 }
 
 const AuctionViewPageOverviewColumnContent: React.FC = observer(() => {
-  const details = useAuctionViewStore().auction.details
+  const store = useAuctionViewStore()
+  const details = store.auction.details
   const auction = details.auction!
 
   return (
@@ -80,6 +82,10 @@ const AuctionViewPageOverviewColumnContent: React.FC = observer(() => {
       </Box>
 
       <PlaceBidButton/>
+
+      {(store.isEditable) && (
+        <AuctionViewPageEditControls/>
+      )}
     </Stack>
   )
 })
