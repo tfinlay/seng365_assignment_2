@@ -13,7 +13,7 @@ import {
   LoadStatusError,
   LoadStatusNotYetAttempted
 } from "../../util/LoadStatus";
-import {computed, makeObservable, observable} from "mobx";
+import {action, computed, makeObservable, observable} from "mobx";
 import {AuctionDetails} from "../../store/AuctionDetailsStore";
 import {ApplicationStore} from "../../store/ApplicationStore";
 import {PageableAuctionStore, PageableAuctionStorePage} from "../../component/auction/pagination/PageableAuctionStore";
@@ -31,9 +31,20 @@ export class MyAuctionsStore implements AuctionSupplier, PageableAuctionStore, P
       pageIndex: observable,
 
       myAuctionsFilters: computed,
+      myBidsFilters: computed,
       auctions: computed,
       loadStatus: computed,
-      isLoading: computed
+      isLoading: computed,
+
+      goToFirstPage: action,
+      goToLastPage: action,
+      goToPrevPage: action,
+      goToNextPage: action,
+
+      pageSize: computed,
+      totalResultCount: computed,
+      auctionCount: computed,
+      maxPageIndex: computed
     })
 
     this.page = this
