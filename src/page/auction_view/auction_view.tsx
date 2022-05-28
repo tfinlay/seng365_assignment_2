@@ -1,32 +1,16 @@
-import React, {useEffect, useReducer, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {observer, useLocalObservable} from "mobx-react-lite";
 import {AuctionStore} from "../../store/AuctionStore";
 import {observable} from "mobx";
 import {AuctionViewStore} from "./AuctionViewStore";
-import {Centred} from "../../component/Centred";
 import {AuctionViewStoreProvider, useAuctionViewStore} from "./auction_view_store_context";
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Chip,
-  Grid,
-  LinearProgress,
-  Skeleton,
-  Stack,
-  Tooltip,
-  Typography
-} from "@mui/material";
-import {LoadStatusDone, LoadStatusError} from "../../util/LoadStatus";
-import {ErrorPresenter} from "../../component/ErrorPresenter";
-import {Navigate} from "react-router-dom";
-import {PhotoBlobView} from "../../component/PhotoBlobView";
+import {Box, Card, CardContent, Grid, LinearProgress, Skeleton, Typography} from "@mui/material";
 import {AuctionViewPageOverviewColumn} from "./component/AuctionViewPageOverviewColumn";
 import {AuctionViewPageBidColumn} from "./component/AuctionViewPageBidColumn";
 import {AuctionViewPageSimilarAuctionsRow} from "./component/AuctionViewPageSimilarAuctionsRow";
 import {AuctionCategoriesStore} from "../../store/AuctionCategoriesStore";
 import {AuctionCategoriesStoreProvider} from "../../store/auction_categories_store_context";
+import {AuctionViewPagePicture} from "./component/AuctionViewPagePicture";
 
 const makeStore = (auction: AuctionStore) => observable(new AuctionViewStore(auction), {}, {autoBind: true})
 
@@ -55,27 +39,7 @@ export const AuctionViewPage: React.FC<AuctionViewPageProps> = observer(({auctio
             }}>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={5}>
-                  {(store.auction.photo.isLoading || store.auction.photo.hasImage) ? (
-                    <PhotoBlobView
-                      image={store.auction.photo.imageData}
-                      imageBuilder={(src) => (
-                        <img
-                          src={src}
-                          style={{
-                            width: '100%',
-                            maxHeight: 400,
-                            objectFit: 'contain'
-                          }}
-                          alt='Auction item'
-                        />
-                      )}
-                      defaultBuilder={() => (
-                        <Skeleton variant='rectangular' height={400}/>
-                      )}
-                    />
-                  ) : (
-                    <Skeleton variant='rectangular' height={400} animation={false}/>
-                  )}
+                  <AuctionViewPagePicture/>
                 </Grid>
 
                 <Grid item xs={12} sm={3}>
@@ -115,3 +79,4 @@ const AuctionViewPageDescription = observer(() => {
     return <Typography variant='body1' sx={{whiteSpace: 'pre-line'}}>{store.auction.details.auction?.description ?? "No description"}</Typography>
   }
 })
+
